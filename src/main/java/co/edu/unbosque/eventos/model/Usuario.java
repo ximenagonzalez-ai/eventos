@@ -40,6 +40,10 @@ public class Usuario {
 
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
+    
+    @Column(name = "email_verificado", nullable = false)
+    @Builder.Default
+    private boolean emailVerificado = false;
 
     @PrePersist
     void antesDeGuardar() {

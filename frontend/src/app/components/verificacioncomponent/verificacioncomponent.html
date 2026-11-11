@@ -1,0 +1,22 @@
+<div class="auth-container">
+  <div class="card auth-card">
+    <h2>Verificación de Cuenta</h2>
+
+    <div *ngIf="cargando" class="estado-box">
+      <div class="spinner"></div>
+      <p>Estamos verificando tu token, por favor espera...</p>
+    </div>
+
+    <div *ngIf="exito" class="mensaje-box success">
+      <div class="icon-success">✓</div>
+      <p>{{ mensaje }}</p>
+      <button class="btn-primary" routerLink="/login">Ir a Iniciar Sesión</button>
+    </div>
+
+    <div *ngIf="error" class="mensaje-box error">
+      <div class="icon-error">✕</div>
+      <p>{{ mensaje }}</p>
+      <button class="btn-secondary" (click)="reenviarCorreo()">Reenviar correo de verificación</button>
+    </div>
+  </div>
+</div>

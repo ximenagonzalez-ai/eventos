@@ -15,10 +15,8 @@ import co.edu.unbosque.eventos.model.Usuario;
 import co.edu.unbosque.eventos.repository.BoletaRepository;
 import co.edu.unbosque.eventos.repository.TipoBoletaRepository;
 import co.edu.unbosque.eventos.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class BoletaService {
 
     private final BoletaRepository boletaRepository;
@@ -26,6 +24,15 @@ public class BoletaService {
     private final UsuarioRepository usuarioRepository;
     private final CompraService compraService;
     private final AuditoriaService auditoriaService;
+
+    public BoletaService(BoletaRepository boletaRepository, TipoBoletaRepository tipoBoletaRepository,
+            UsuarioRepository usuarioRepository, CompraService compraService, AuditoriaService auditoriaService) {
+        this.boletaRepository = boletaRepository;
+        this.tipoBoletaRepository = tipoBoletaRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.compraService = compraService;
+        this.auditoriaService = auditoriaService;
+    }
 
     @Transactional
     public List<BoletaDTO> comprar(Long usuarioId, Long tipoBoletaId, Integer cantidad) {
@@ -52,11 +59,10 @@ public class BoletaService {
 
         List<BoletaDTO> respuesta = new ArrayList<>();
         for (int i = 0; i < cantidad; i++) {
-            Boleta boleta = Boleta.builder()
-                    .compra(compra)
-                    .tipoBoleta(tipo)
-                    .precioPagado(precio)
-                    .build();
+            Boleta boleta = new Boleta();
+            boleta.setCompra(compra);
+            boleta.setTipoBoleta(tipo);
+            boleta.setPrecioPagado(precio);
             boleta = boletaRepository.save(boleta);
             respuesta.add(BoletaDTO.convertirABoletaDTO(boleta));
         }

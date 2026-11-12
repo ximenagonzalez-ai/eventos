@@ -1,19 +1,13 @@
 package co.edu.unbosque.eventos.model;
 
-import jakarta.persistence.*;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.persistence.*;
+
 @Entity
 @Table(name = "boletas")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Boleta {
 
     @Id
@@ -37,6 +31,8 @@ public class Boleta {
     @Column(name = "fecha_emision", nullable = false, updatable = false)
     private LocalDateTime fechaEmision;
 
+    public Boleta() {}
+
     @PrePersist
     void antesDeGuardar() {
         this.fechaEmision = LocalDateTime.now();
@@ -44,4 +40,22 @@ public class Boleta {
             this.codigo = UUID.randomUUID().toString();
         }
     }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Compra getCompra() { return compra; }
+    public void setCompra(Compra compra) { this.compra = compra; }
+
+    public TipoBoleta getTipoBoleta() { return tipoBoleta; }
+    public void setTipoBoleta(TipoBoleta tipoBoleta) { this.tipoBoleta = tipoBoleta; }
+
+    public String getCodigo() { return codigo; }
+    public void setCodigo(String codigo) { this.codigo = codigo; }
+
+    public BigDecimal getPrecioPagado() { return precioPagado; }
+    public void setPrecioPagado(BigDecimal precioPagado) { this.precioPagado = precioPagado; }
+
+    public LocalDateTime getFechaEmision() { return fechaEmision; }
+    public void setFechaEmision(LocalDateTime fechaEmision) { this.fechaEmision = fechaEmision; }
 }

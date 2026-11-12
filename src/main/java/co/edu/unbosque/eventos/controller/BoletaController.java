@@ -12,14 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unbosque.eventos.DTO.BoletaDTO;
 import co.edu.unbosque.eventos.DTO.CompraDTO;
 import co.edu.unbosque.eventos.service.BoletaService;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/boletas")
-@RequiredArgsConstructor
 public class BoletaController {
 
     private final BoletaService boletaService;
+
+    public BoletaController(BoletaService boletaService) {
+        this.boletaService = boletaService;
+    }
 
     @PostMapping("/comprar")
     public List<BoletaDTO> comprar(@RequestBody CompraDTO dto) {

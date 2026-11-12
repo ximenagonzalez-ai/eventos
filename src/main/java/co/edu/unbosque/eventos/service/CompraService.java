@@ -10,21 +10,23 @@ import co.edu.unbosque.eventos.model.Compra;
 import co.edu.unbosque.eventos.model.EstadoCompra;
 import co.edu.unbosque.eventos.model.Usuario;
 import co.edu.unbosque.eventos.repository.CompraRepository;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class CompraService {
 
     private final CompraRepository compraRepository;
     private final AuditoriaService auditoriaService;
 
+    public CompraService(CompraRepository compraRepository, AuditoriaService auditoriaService) {
+        this.compraRepository = compraRepository;
+        this.auditoriaService = auditoriaService;
+    }
+
     @Transactional
     public Compra crear(Usuario usuario, BigDecimal total) {
-        Compra compra = Compra.builder()
-                .usuario(usuario)
-                .total(total)
-                .build();
+        Compra compra = new Compra();
+        compra.setUsuario(usuario);
+        compra.setTotal(total);
         compra = compraRepository.save(compra);
         auditoriaService.registrar(usuario, "CREAR", "Compra", compra.getId(),
                 "Compra creada por un total de " + total);

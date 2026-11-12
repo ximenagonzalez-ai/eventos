@@ -7,22 +7,23 @@ import org.springframework.stereotype.Service;
 import co.edu.unbosque.eventos.model.Auditoria;
 import co.edu.unbosque.eventos.model.Usuario;
 import co.edu.unbosque.eventos.repository.AuditoriaRepository;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class AuditoriaService {
 
     private final AuditoriaRepository auditoriaRepository;
 
+    public AuditoriaService(AuditoriaRepository auditoriaRepository) {
+        this.auditoriaRepository = auditoriaRepository;
+    }
+
     public Auditoria registrar(Usuario usuario, String accion, String entidad, Long entidadId, String detalle) {
-        Auditoria auditoria = Auditoria.builder()
-                .usuario(usuario)
-                .accion(accion)
-                .entidad(entidad)
-                .entidadId(entidadId)
-                .detalle(detalle)
-                .build();
+        Auditoria auditoria = new Auditoria();
+        auditoria.setUsuario(usuario);
+        auditoria.setAccion(accion);
+        auditoria.setEntidad(entidad);
+        auditoria.setEntidadId(entidadId);
+        auditoria.setDetalle(detalle);
         return auditoriaRepository.save(auditoria);
     }
 

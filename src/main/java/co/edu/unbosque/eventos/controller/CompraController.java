@@ -11,14 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unbosque.eventos.DTO.CompraDTO;
 import co.edu.unbosque.eventos.model.Compra;
 import co.edu.unbosque.eventos.service.CompraService;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/compras")
-@RequiredArgsConstructor
 public class CompraController {
 
     private final CompraService compraService;
+
+    public CompraController(CompraService compraService) {
+        this.compraService = compraService;
+    }
 
     @GetMapping("/usuario/{usuarioId}")
     public List<CompraDTO> listarPorUsuario(@PathVariable Long usuarioId) {

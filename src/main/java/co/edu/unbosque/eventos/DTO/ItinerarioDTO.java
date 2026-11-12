@@ -4,15 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import co.edu.unbosque.eventos.model.Itinerario;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class ItinerarioDTO {
 
     // Datos que llegan al crear
@@ -24,6 +16,8 @@ public class ItinerarioDTO {
     private LocalDateTime fechaCreacion;
     private List<String> eventos;
 
+    public ItinerarioDTO() {}
+
     public static ItinerarioDTO convertirAItinerarioDTO(Itinerario itinerario, List<String> eventos) {
         ItinerarioDTO dto = new ItinerarioDTO();
         dto.setId(itinerario.getId());
@@ -33,4 +27,19 @@ public class ItinerarioDTO {
         dto.setEventos(eventos);
         return dto;
     }
+
+    public Long getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
+
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+
+    public List<String> getEventos() { return eventos; }
+    public void setEventos(List<String> eventos) { this.eventos = eventos; }
 }

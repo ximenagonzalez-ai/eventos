@@ -15,10 +15,8 @@ import co.edu.unbosque.eventos.repository.EventoRepository;
 import co.edu.unbosque.eventos.repository.ItinerarioItemRepository;
 import co.edu.unbosque.eventos.repository.ItinerarioRepository;
 import co.edu.unbosque.eventos.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class ItinerarioService {
 
     private final ItinerarioRepository itinerarioRepository;
@@ -27,14 +25,23 @@ public class ItinerarioService {
     private final EventoRepository eventoRepository;
     private final AuditoriaService auditoriaService;
 
+    public ItinerarioService(ItinerarioRepository itinerarioRepository,
+            ItinerarioItemRepository itinerarioItemRepository, UsuarioRepository usuarioRepository,
+            EventoRepository eventoRepository, AuditoriaService auditoriaService) {
+        this.itinerarioRepository = itinerarioRepository;
+        this.itinerarioItemRepository = itinerarioItemRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.eventoRepository = eventoRepository;
+        this.auditoriaService = auditoriaService;
+    }
+
     @Transactional
     public ItinerarioDTO crear(Long usuarioId, String nombre) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + usuarioId));
-        Itinerario itinerario = Itinerario.builder()
-                .usuario(usuario)
-                .nombre(nombre)
-                .build();
+        Itinerario itinerario = new Itinerario();
+        itinerario.setUsuario(usuario);
+        itinerario.setNombre(nombre);
         itinerario = itinerarioRepository.save(itinerario);
         auditoriaService.registrar(usuario, "CREAR", "Itinerario", itinerario.getId(),
                 "Itinerario creado: " + nombre);
@@ -48,10 +55,9 @@ public class ItinerarioService {
         Evento evento = eventoRepository.findById(eventoId)
                 .orElseThrow(() -> new IllegalArgumentException("Evento no encontrado: " + eventoId));
 
-        ItinerarioItem item = ItinerarioItem.builder()
-                .itinerario(itinerario)
-                .evento(evento)
-                .build();
+        ItinerarioItem item = new ItinerarioItem();
+        item.setItinerario(itinerario);
+        item.setEvento(evento);
         itinerarioItemRepository.save(item);
 
         auditoriaService.registrar(itinerario.getUsuario(), "AGREGAR_EVENTO", "Itinerario", itinerarioId,

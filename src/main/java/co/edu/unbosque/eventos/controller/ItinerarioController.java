@@ -11,14 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unbosque.eventos.DTO.ItinerarioDTO;
 import co.edu.unbosque.eventos.service.ItinerarioService;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/itinerarios")
-@RequiredArgsConstructor
 public class ItinerarioController {
 
     private final ItinerarioService itinerarioService;
+
+    public ItinerarioController(ItinerarioService itinerarioService) {
+        this.itinerarioService = itinerarioService;
+    }
 
     @PostMapping
     public ItinerarioDTO crear(@RequestBody ItinerarioDTO dto) {

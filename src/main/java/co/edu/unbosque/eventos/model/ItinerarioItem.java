@@ -1,15 +1,9 @@
 package co.edu.unbosque.eventos.model;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "itinerario_items")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ItinerarioItem {
 
     @Id
@@ -23,4 +17,15 @@ public class ItinerarioItem {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "evento_id", nullable = false)
     private Evento evento;
+
+    public ItinerarioItem() {}
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Itinerario getItinerario() { return itinerario; }
+    public void setItinerario(Itinerario itinerario) { this.itinerario = itinerario; }
+
+    public Evento getEvento() { return evento; }
+    public void setEvento(Evento evento) { this.evento = evento; }
 }

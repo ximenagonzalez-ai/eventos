@@ -1,0 +1,87 @@
+<div class="boleta-container">
+  <div class="header-gestion">
+    <h2>Gestión de Boletas</h2>
+    <button *ngIf="esAdmin" type="button" class="btn-primary" (click)="abrirModal()">
+      + Emitir Nueva Boleta
+    </button>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="mostrarModal" (click)="cerrarModal()">
+    <div class="card form-card modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Emitir Nueva Boleta</h3>
+        <button type="button" class="btn-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <form (ngSubmit)="crearBoleta()">
+        <div class="form-group">
+          <label for="evento">Nombre del Evento</label>
+          <input
+            type="text"
+            id="evento"
+            [(ngModel)]="nuevaBoleta.eventoNombre"
+            name="eventoNombre"
+            placeholder="Ej. Concierto Estéreo"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tipo">Tipo de Boleta</label>
+            <select id="tipo" [(ngModel)]="nuevaBoleta.tipoBoleta" name="tipoBoleta">
+              <option value="General">General</option>
+              <option value="VIP">VIP</option>
+              <option value="Preferencial">Preferencial</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="precio">Precio ($)</label>
+            <input
+              type="number"
+              id="precio"
+              [(ngModel)]="nuevaBoleta.precio"
+              name="precio"
+              min="0"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar Boleta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card list-card">
+    <h3>Mis Boletas Registradas</h3>
+
+    <div class="grid-boletas">
+      <div
+        *ngFor="let item of boletas"
+        class="ticket-item"
+        [ngClass]="item.estado.toLowerCase()"
+      >
+        <div class="ticket-header">
+          <span class="codigo">{{ item.codigo }}</span>
+          <span class="badge" [ngClass]="item.estado.toLowerCase()">{{ item.estado }}</span>
+        </div>
+
+        <div class="ticket-body">
+          <h4>{{ item.eventoNombre }}</h4>
+          <p><strong>Tipo:</strong> {{ item.tipoBoleta }}</p>
+          <p><strong>Precio:</strong> ${{ item.precio | number }}</p>
+          <p class="fecha"><small>Fecha: {{ item.fechaEmision }}</small></p>
+        </div>
+
+        <div class="ticket-actions" *ngIf="item.estado === 'ACTIVA'">
+          <button type="button" (click)="cancelarBoleta(item.id)" class="btn-cancel">Anular</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

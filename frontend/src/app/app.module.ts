@@ -11,6 +11,7 @@ import { LoginComponent } from './components/logincomponent/logincomponent';
 import { RegistroComponent } from './components/registrocomponent/registrocomponent';
 import { VerificacionComponent } from './components/verificacioncomponent/verificacioncomponent';
 import { routes } from './app.routes';
+import { MiBoletaComponent } from './components/miboletacomponent/miboletacomponent';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { routes } from './app.routes';
     LoginComponent,
     RegistroComponent,
     VerificacionComponent,
+    MiBoletaComponent
   ],
   imports: [BrowserModule, FormsModule, HttpClientModule, RouterModule.forRoot(routes)],
   providers: [],

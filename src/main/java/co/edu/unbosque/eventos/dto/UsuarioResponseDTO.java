@@ -1,11 +1,11 @@
-package co.edu.unbosque.eventos.DTO;
+package co.edu.unbosque.eventos.dto;
+
+import java.time.LocalDateTime;
 
 import co.edu.unbosque.eventos.model.Rol;
 import co.edu.unbosque.eventos.model.Usuario;
  
-import java.time.LocalDateTime;
- 
-public class UsuarioResponse {
+public class UsuarioResponseDTO {
  
     private Long id;
     private String nombre;
@@ -14,10 +14,10 @@ public class UsuarioResponse {
     private boolean activo;
     private LocalDateTime fechaCreacion;
  
-    public UsuarioResponse() {
+    public UsuarioResponseDTO() {
     }
  
-    public UsuarioResponse(Long id, String nombre, String email, Rol rol,
+    public UsuarioResponseDTO(Long id, String nombre, String email, Rol rol,
                            boolean activo, LocalDateTime fechaCreacion) {
         this.id = id;
         this.nombre = nombre;
@@ -27,8 +27,8 @@ public class UsuarioResponse {
         this.fechaCreacion = fechaCreacion;
     }
  
-    public static UsuarioResponse convertirAusuarioResponse(Usuario usuario) {
-        return new UsuarioResponse(
+    public static UsuarioResponseDTO convertirAusuarioResponse(Usuario usuario) {
+        return new UsuarioResponseDTO(
                 usuario.getId(),
                 usuario.getNombre(),
                 usuario.getEmail(),

@@ -1,6 +1,6 @@
 package co.edu.unbosque.eventos.controller;
 
-import co.edu.unbosque.eventos.DTO.EventoDTO;
+import co.edu.unbosque.eventos.dto.EventoDTO;
 import co.edu.unbosque.eventos.model.Evento.EstadoEvento;
 import co.edu.unbosque.eventos.service.EventoApiClient;
 import co.edu.unbosque.eventos.service.EventoService;

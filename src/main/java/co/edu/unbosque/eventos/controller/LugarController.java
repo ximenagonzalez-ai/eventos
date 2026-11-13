@@ -1,6 +1,6 @@
 package co.edu.unbosque.eventos.controller;
 
-import co.edu.unbosque.eventos.DTO.LugarDTO;
+import co.edu.unbosque.eventos.dto.LugarDTO;
 import co.edu.unbosque.eventos.service.LugarService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

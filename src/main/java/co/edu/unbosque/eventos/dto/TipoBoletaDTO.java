@@ -1,4 +1,4 @@
-package co.edu.unbosque.eventos.DTO;
+package co.edu.unbosque.eventos.dto;
 
 import lombok.*;
 
@@ -7,9 +7,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CategoriaDTO {
+public class TipoBoletaDTO {
 
     private Long id;
     private String nombre;
+    private Double precio;
+    private Integer cantidadDisponible;
     private String descripcion;
+    private Long eventoId;
 }

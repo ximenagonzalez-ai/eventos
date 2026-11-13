@@ -1,4 +1,4 @@
-package co.edu.unbosque.eventos.DTO;
+package co.edu.unbosque.eventos.dto;
 
 import lombok.*;
 

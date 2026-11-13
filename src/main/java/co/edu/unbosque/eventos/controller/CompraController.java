@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.edu.unbosque.eventos.DTO.CompraDTO;
+import co.edu.unbosque.eventos.dto.CompraDTO;
 import co.edu.unbosque.eventos.model.Compra;
 import co.edu.unbosque.eventos.service.CompraService;
 

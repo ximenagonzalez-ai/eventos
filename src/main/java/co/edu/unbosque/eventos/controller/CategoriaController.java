@@ -1,6 +1,6 @@
 package co.edu.unbosque.eventos.controller;
 
-import co.edu.unbosque.eventos.DTO.CategoriaDTO;
+import co.edu.unbosque.eventos.dto.CategoriaDTO;
 import co.edu.unbosque.eventos.service.CategoriaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

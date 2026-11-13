@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.edu.unbosque.eventos.DTO.BoletaDTO;
+import co.edu.unbosque.eventos.dto.BoletaDTO;
 import co.edu.unbosque.eventos.model.Boleta;
 import co.edu.unbosque.eventos.model.Compra;
 import co.edu.unbosque.eventos.model.TipoBoleta;

@@ -1,6 +1,6 @@
 package co.edu.unbosque.eventos.service;
 
-import co.edu.unbosque.eventos.DTO.CategoriaDTO;
+import co.edu.unbosque.eventos.dto.CategoriaDTO;
 import co.edu.unbosque.eventos.model.Categoria;
 import co.edu.unbosque.eventos.repository.CategoriaRepository;
 import lombok.RequiredArgsConstructor;

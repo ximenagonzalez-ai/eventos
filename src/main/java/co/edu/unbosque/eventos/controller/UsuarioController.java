@@ -1,6 +1,6 @@
 package co.edu.unbosque.eventos.controller;
 
-import co.edu.unbosque.eventos.DTO.UsuarioDTO;
+import co.edu.unbosque.eventos.dto.UsuarioDTO;
 import co.edu.unbosque.eventos.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

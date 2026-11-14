@@ -7,6 +7,10 @@
       {{ errorMessage }}
     </div>
 
+    <div *ngIf="successMessage" class="success-alert">
+      {{ successMessage }}
+    </div>
+
     <form (ngSubmit)="onRegister()">
       <div class="form-group">
         <label for="nombre">Nombre Completo</label>
@@ -55,12 +59,14 @@
       <div class="form-group">
         <label for="rol">Tipo de Cuenta</label>
         <select id="rol" name="rol" [(ngModel)]="userData.rol" class="select-input">
-          <option value="CLIENTE">Usuario (Comprar Boletos)</option>
-          <option value="ADMINISTRADOR">Administrador (Crear y Gestionar Eventos)</option>
+          <option value="USER">Usuario (Comprar Boletos)</option>
+          <option value="ADMIN">Administrador (Crear y Gestionar Eventos)</option>
         </select>
       </div>
 
-      <button type="submit" class="btn-submit">Registrarse</button>
+      <button type="submit" class="btn-submit" [disabled]="isLoading">
+        {{ isLoading ? 'Registrando...' : 'Registrarse' }}
+      </button>
     </form>
 
     <div class="register-footer">

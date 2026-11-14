@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/authservice';
+import { VerificacionResponse } from '../../models/authmodel';
 
 @Component({
   selector: 'app-verificacioncomponent',
   standalone: false,
   templateUrl: './verificacioncomponent.html',
-  styleUrl: './verificacioncomponent.css',
+  styleUrls: ['./verificacioncomponent.css'],
 })
 export class VerificacionComponent implements OnInit {
   cargando: boolean = true;
@@ -17,7 +18,7 @@ export class VerificacionComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private authService: AuthService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -35,26 +36,15 @@ export class VerificacionComponent implements OnInit {
 
   verificarTokenBackend(token: string): void {
     this.authService.verificarEmail(token).subscribe({
-      next: (res: any) => {
+      next: (res: VerificacionResponse) => {
         this.cargando = false;
         this.exito = true;
-        this.mensaje = res.message || '¡Tu correo ha sido verificado con éxito!';
+        this.mensaje = res.mensaje || '¡Tu correo ha sido verificado con éxito!';
       },
       error: () => {
         this.cargando = false;
         this.error = true;
         this.mensaje = 'El enlace de verificación ha expirado o no es válido.';
-      },
-    });
-  }
-
-  reenviarCorreo(): void {
-    this.authService.reenviarVerificacion(this.token).subscribe({
-      next: () => {
-        alert('Se ha enviado un nuevo enlace de verificación a tu correo.');
-      },
-      error: () => {
-        alert('Hubo un error al intentar reenviar el correo.');
       },
     });
   }

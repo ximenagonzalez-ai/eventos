@@ -7,7 +7,6 @@ import co.edu.unbosque.eventos.service.EventoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,11 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/evento")
-@RequiredArgsConstructor
 @Tag(name = "Eventos", description = "Catálogo de eventos: teatro, ferias, conciertos y más")
 @SecurityRequirement(name = "bearerAuth")
 public class EventoController {
@@ -28,12 +25,17 @@ public class EventoController {
     private final EventoService eventoService;
     private final EventoApiClient eventoApiClient;
 
+    public EventoController(EventoService eventoService, EventoApiClient eventoApiClient) {
+        this.eventoService = eventoService;
+        this.eventoApiClient = eventoApiClient;
+    }
+
     // ---- CRUD (ADMIN) ----
 
     @Operation(summary = "Crear evento (ADMIN)")
     @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> crear(@RequestBody EventoDTO dto) {
-        int status = eventoService.crear(dto);
+        int status = eventoService.create(dto);
         return switch (status) {
             case 0 -> ResponseEntity.status(HttpStatus.CREATED).body("Evento creado exitosamente");
             case 1 -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Categoría no encontrada");
@@ -45,7 +47,7 @@ public class EventoController {
     @Operation(summary = "Actualizar evento (ADMIN)")
     @PutMapping(path = "/update/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> actualizar(@PathVariable Long id, @RequestBody EventoDTO dto) {
-        int status = eventoService.actualizar(id, dto);
+        int status = eventoService.updateById(id, dto);
         return switch (status) {
             case 0 -> ResponseEntity.ok("Evento actualizado exitosamente");
             case 1 -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Categoría no encontrada");
@@ -57,8 +59,8 @@ public class EventoController {
     @Operation(summary = "Eliminar evento (ADMIN)")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> eliminar(@PathVariable Long id) {
-        boolean ok = eventoService.eliminar(id);
-        if (!ok) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evento no encontrado");
+        int status = eventoService.deleteById(id);
+        if (status != 0) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Evento no encontrado");
         return ResponseEntity.ok("Evento eliminado exitosamente");
     }
 
@@ -75,9 +77,9 @@ public class EventoController {
     @Operation(summary = "Obtener evento por ID")
     @GetMapping("/getbyid/{id}")
     public ResponseEntity<EventoDTO> getById(@PathVariable Long id) {
-        Optional<EventoDTO> dto = eventoService.getById(id);
-        return dto.map(ResponseEntity::ok)
-                  .orElse(ResponseEntity.notFound().build());
+        EventoDTO dto = eventoService.getById(id);
+        if (dto == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(dto);
     }
 
     @Operation(summary = "Filtrar por categoría")
@@ -112,7 +114,7 @@ public class EventoController {
         return ResponseEntity.ok(lista);
     }
 
-    @Operation(summary = "Filtrar por rango de fechas (yyyy-MM-ddTHH:mm:ss)")
+    @Operation(summary = "Filtrar por rango de fechas (formato: yyyy-MM-ddTHH:mm:ss)")
     @GetMapping("/byfecha")
     public ResponseEntity<List<EventoDTO>> getByFecha(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
@@ -130,7 +132,8 @@ public class EventoController {
 
     // ---- Sincronización Ticketmaster (ADMIN) ----
 
-    @Operation(summary = "Sincronizar desde Ticketmaster (ADMIN)")
+    @Operation(summary = "Sincronizar desde Ticketmaster (ADMIN)",
+               description = "Importa eventos nuevos. Primero crea las categorías: Teatro, Concierto, Deporte, Familiar, Cine, General.")
     @PostMapping("/sync")
     public ResponseEntity<String> sincronizar() {
         int nuevos = eventoApiClient.sincronizar();

@@ -14,14 +14,12 @@
     <div class="navbar-right-group">
 
       <nav class="nav-links">
-
         <a routerLink="/mis-boletas" routerLinkActive="active" class="nav-item">Mis Boletas</a>
-
+        <a *ngIf="isAdmin" routerLink="/auditoria" routerLinkActive="active" class="nav-item">Auditoría</a>
         <a routerLink="/conciertos" class="nav-item">Conciertos</a>
         <a routerLink="/deportes" class="nav-item">Deportes</a>
         <a routerLink="/teatro" class="nav-item">Teatro</a>
       </nav>
-
 
       <div class="customizer-container" (click)="toggleCustomizer($event)">
         <button class="customizer-btn" aria-label="Personalizar tema">
@@ -63,6 +61,7 @@
         <div class="dropdown-box" [class.active]="isDropdownOpen">
           <a routerLink="/perfil">Mi Perfil</a>
           <a routerLink="/mis-boletos">Mis Boletos</a>
+          <a *ngIf="isAdmin" routerLink="/auditoria">Auditoría</a>
           <a routerLink="/configuracion">Ajustes</a>
           <a routerLink="/logout" class="logout" (click)="logout($event)">Cerrar Sesión</a>
         </div>

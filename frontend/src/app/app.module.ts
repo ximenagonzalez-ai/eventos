@@ -10,8 +10,9 @@ import { FooterComponent } from './components/footercomponent/footercomponent';
 import { LoginComponent } from './components/logincomponent/logincomponent';
 import { RegistroComponent } from './components/registrocomponent/registrocomponent';
 import { VerificacionComponent } from './components/verificacioncomponent/verificacioncomponent';
-import { routes } from './app.routes';
 import { MiBoletaComponent } from './components/miboletacomponent/miboletacomponent';
+import { AuditoriaComponent } from './components/auditoriacomponent/auditoriacomponent';
+import { routes } from './app.routes';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { MiBoletaComponent } from './components/miboletacomponent/miboletacompon
     LoginComponent,
     RegistroComponent,
     VerificacionComponent,
-    MiBoletaComponent
+    MiBoletaComponent,
+    AuditoriaComponent
   ],
   imports: [BrowserModule, FormsModule, HttpClientModule, RouterModule.forRoot(routes)],
   providers: [],

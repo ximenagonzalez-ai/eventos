@@ -10,7 +10,6 @@ import { ThemeService } from '../../services/themeservice';
 })
 export class NavbarComponent {
   searchQuery: string = '';
-  isLoggedIn: boolean = false;
   isDropdownOpen: boolean = false;
   isCustomizerOpen: boolean = false;
 
@@ -18,6 +17,14 @@ export class NavbarComponent {
     private router: Router,
     private themeService: ThemeService
   ) {}
+
+  get isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
+  get isAdmin(): boolean {
+    return localStorage.getItem('rol') === 'ADMIN';
+  }
 
   onSearch(): void {
     if (this.searchQuery.trim()) {
@@ -45,7 +52,8 @@ export class NavbarComponent {
   logout(event: Event): void {
     event.preventDefault();
     localStorage.removeItem('token');
-    this.isLoggedIn = false;
+    localStorage.removeItem('rol');
+    this.isDropdownOpen = false;
     this.router.navigate(['/login']);
   }
 }

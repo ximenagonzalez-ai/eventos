@@ -32,4 +32,9 @@ public class BoletaController {
     public List<BoletaDTO> listarPorCompra(@PathVariable Long compraId) {
         return boletaService.listarPorCompra(compraId);
     }
+
+    @PostMapping("/compra/{compraId}/cancelar")
+    public CompraDTO cancelar(@PathVariable Long compraId) {
+        return boletaService.cancelarCompra(compraId);
+    }
 }

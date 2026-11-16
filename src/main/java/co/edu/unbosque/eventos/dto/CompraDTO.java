@@ -1,5 +1,7 @@
 package co.edu.unbosque.eventos.dto;
 
+import co.edu.unbosque.eventos.model.Compra;
+import co.edu.unbosque.eventos.model.EstadoCompra;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

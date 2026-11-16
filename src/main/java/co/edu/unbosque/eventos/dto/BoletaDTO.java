@@ -1,5 +1,6 @@
 package co.edu.unbosque.eventos.dto;
 
+import co.edu.unbosque.eventos.model.Boleta;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

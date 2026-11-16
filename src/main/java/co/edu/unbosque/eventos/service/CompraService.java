@@ -44,6 +44,20 @@ public class CompraService {
         return compra;
     }
 
+    @Transactional
+    public Compra cancelar(Long compraId) {
+        Compra compra = compraRepository.findById(compraId)
+                .orElseThrow(() -> new IllegalArgumentException("Compra no encontrada: " + compraId));
+        if (compra.getEstado() == EstadoCompra.CANCELADA) {
+            throw new IllegalArgumentException("La compra ya está cancelada");
+        }
+        compra.setEstado(EstadoCompra.CANCELADA);
+        compra = compraRepository.save(compra);
+        auditoriaService.registrar(compra.getUsuario(), "CANCELAR", "Compra", compra.getId(),
+                "Compra cancelada");
+        return compra;
+    }
+
     public List<Compra> listarPorUsuario(Long usuarioId) {
         return compraRepository.findByUsuarioIdOrderByFechaCompraDesc(usuarioId);
     }

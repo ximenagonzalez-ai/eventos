@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import co.edu.unbosque.eventos.DTO.ItinerarioDTO;
+import co.edu.unbosque.eventos.dto.ItinerarioDTO;
 import co.edu.unbosque.eventos.model.Evento;
 import co.edu.unbosque.eventos.model.Itinerario;
 import co.edu.unbosque.eventos.model.ItinerarioItem;

@@ -1,10 +1,7 @@
-package co.edu.unbosque.eventos.DTO;
+package co.edu.unbosque.eventos.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-import co.edu.unbosque.eventos.model.Compra;
-import co.edu.unbosque.eventos.model.EstadoCompra;
 
 public class CompraDTO {
 

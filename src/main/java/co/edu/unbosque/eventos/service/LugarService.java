@@ -1,6 +1,6 @@
 package co.edu.unbosque.eventos.service;
 
-import co.edu.unbosque.eventos.DTO.LugarDTO;
+import co.edu.unbosque.eventos.dto.LugarDTO;
 import co.edu.unbosque.eventos.model.Lugar;
 import co.edu.unbosque.eventos.repository.LugarRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package co.edu.unbosque.eventos.service;
 
-import co.edu.unbosque.eventos.DTO.TipoBoletaDTO;
+import co.edu.unbosque.eventos.dto.TipoBoletaDTO;
 import co.edu.unbosque.eventos.model.Evento;
 import co.edu.unbosque.eventos.model.TipoBoleta;
 import co.edu.unbosque.eventos.repository.EventoRepository;

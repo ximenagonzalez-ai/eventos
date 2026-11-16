@@ -1,6 +1,6 @@
 package co.edu.unbosque.eventos.service;
 
-import co.edu.unbosque.eventos.DTO.UsuarioDTO;
+import co.edu.unbosque.eventos.dto.UsuarioDTO;
 import co.edu.unbosque.eventos.model.Rol;
 import co.edu.unbosque.eventos.model.Usuario;
 import co.edu.unbosque.eventos.repository.UsuarioRepository;

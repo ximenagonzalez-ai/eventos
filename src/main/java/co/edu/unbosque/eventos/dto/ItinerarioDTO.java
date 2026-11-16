@@ -1,9 +1,7 @@
-package co.edu.unbosque.eventos.DTO;
+package co.edu.unbosque.eventos.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import co.edu.unbosque.eventos.model.Itinerario;
 
 public class ItinerarioDTO {
 

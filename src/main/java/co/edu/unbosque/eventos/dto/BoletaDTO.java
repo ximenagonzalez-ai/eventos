@@ -1,9 +1,7 @@
-package co.edu.unbosque.eventos.DTO;
+package co.edu.unbosque.eventos.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-import co.edu.unbosque.eventos.model.Boleta;
 
 public class BoletaDTO {
 

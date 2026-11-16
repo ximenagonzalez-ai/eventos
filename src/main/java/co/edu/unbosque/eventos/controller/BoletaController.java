@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.edu.unbosque.eventos.DTO.BoletaDTO;
-import co.edu.unbosque.eventos.DTO.CompraDTO;
+import co.edu.unbosque.eventos.dto.BoletaDTO;
+import co.edu.unbosque.eventos.dto.CompraDTO;
 import co.edu.unbosque.eventos.service.BoletaService;
 
 @RestController

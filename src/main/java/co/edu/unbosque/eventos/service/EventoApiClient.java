@@ -1,11 +1,11 @@
 package co.edu.unbosque.eventos.service;
 
-import co.edu.unbosque.eventos.DTO.EventoDTO;
-import co.edu.unbosque.eventos.DTO.LugarDTO;
 import co.edu.unbosque.eventos.DTO.ticketmaster.TmClassificationDTO;
 import co.edu.unbosque.eventos.DTO.ticketmaster.TmEventoDTO;
 import co.edu.unbosque.eventos.DTO.ticketmaster.TmRespuestaDTO;
 import co.edu.unbosque.eventos.DTO.ticketmaster.TmVenueDTO;
+import co.edu.unbosque.eventos.dto.EventoDTO;
+import co.edu.unbosque.eventos.dto.LugarDTO;
 import co.edu.unbosque.eventos.model.Evento.EstadoEvento;
 import co.edu.unbosque.eventos.model.Evento.FuenteEvento;
 import co.edu.unbosque.eventos.repository.CategoriaRepository;

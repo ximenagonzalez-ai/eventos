@@ -28,7 +28,7 @@ export class NavbarComponent {
 
   onSearch(): void {
     if (this.searchQuery.trim()) {
-      console.log('Buscando:', this.searchQuery);
+      this.router.navigate(['/eventos'], { queryParams: { q: this.searchQuery.trim() } });
     }
   }
 
@@ -53,6 +53,7 @@ export class NavbarComponent {
     event.preventDefault();
     localStorage.removeItem('token');
     localStorage.removeItem('rol');
+    localStorage.removeItem('email');
     this.isDropdownOpen = false;
     this.router.navigate(['/login']);
   }

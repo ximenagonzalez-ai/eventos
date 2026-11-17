@@ -8,4 +8,8 @@ import { Component } from '@angular/core';
 })
 export class FooterComponent {
   anioActual: number = new Date().getFullYear();
+
+  get isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
 }

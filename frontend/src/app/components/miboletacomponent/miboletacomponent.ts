@@ -9,7 +9,10 @@ import { Boleta } from '../../models/boletamodel';
 })
 export class MiBoletaComponent implements OnInit {
   mostrarModal: boolean = false;
-  esAdmin: boolean = true;
+
+  get esAdmin(): boolean {
+    return localStorage.getItem('rol') === 'ADMIN' || localStorage.getItem('role') === 'ADMIN';
+  }
 
   boletas: Boleta[] = [
     {
@@ -35,6 +38,7 @@ export class MiBoletaComponent implements OnInit {
   ngOnInit(): void {}
 
   abrirModal(): void {
+    if (!this.esAdmin) return;
     this.mostrarModal = true;
   }
 
@@ -48,6 +52,8 @@ export class MiBoletaComponent implements OnInit {
   }
 
   crearBoleta(): void {
+    if (!this.esAdmin) return;
+
     if (!this.nuevaBoleta.eventoNombre || this.nuevaBoleta.precio <= 0) {
       alert('Por favor complete el nombre del evento y un precio válido.');
       return;
@@ -75,6 +81,8 @@ export class MiBoletaComponent implements OnInit {
   }
 
   cancelarBoleta(id?: number): void {
+    if (!this.esAdmin) return;
+
     const boleta = this.boletas.find((b) => b.id === id);
     if (boleta) {
       boleta.estado = 'CANCELADA';

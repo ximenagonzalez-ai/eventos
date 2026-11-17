@@ -1,12 +1,12 @@
 <div class="boleta-container">
   <div class="header-gestion">
-    <h2>Gestión de Boletas</h2>
+    <h2>{{ esAdmin ? 'Gestión de Boletas' : 'Mis Boletas' }}</h2>
     <button *ngIf="esAdmin" type="button" class="btn-primary" (click)="abrirModal()">
       + Emitir Nueva Boleta
     </button>
   </div>
 
-  <div class="modal-backdrop" *ngIf="mostrarModal" (click)="cerrarModal()">
+  <div class="modal-backdrop" *ngIf="esAdmin && mostrarModal" (click)="cerrarModal()">
     <div class="card form-card modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>Emitir Nueva Boleta</h3>
@@ -78,7 +78,7 @@
           <p class="fecha"><small>Fecha: {{ item.fechaEmision }}</small></p>
         </div>
 
-        <div class="ticket-actions" *ngIf="item.estado === 'ACTIVA'">
+        <div class="ticket-actions" *ngIf="esAdmin && item.estado === 'ACTIVA'">
           <button type="button" (click)="cancelarBoleta(item.id)" class="btn-cancel">Anular</button>
         </div>
       </div>

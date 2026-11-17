@@ -2,17 +2,18 @@
   <div class="footer-content">
 
     <div class="footer-col-brand">
-      <a routerLink="/" class="footer-logo">VibePass<span>.</span></a>
+      <a routerLink="/eventos" class="footer-logo">VibePass<span>.</span></a>
       <p class="footer-desc">Tu plataforma de confianza para vivir los mejores eventos, conciertos y obras de teatro.</p>
-      <div class="footer-socials">
-        <a href="#" target="_blank" aria-label="Facebook">FB</a>
-        <a href="#" target="_blank" aria-label="Instagram">IG</a>
-        <a href="#" target="_blank" aria-label="Twitter">X</a>
+      <div class="footer-socials" translate="no">
+        <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">FB</a>
+        <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
+        <a href="https://x.com" target="_blank" rel="noopener" aria-label="X">X</a>
       </div>
     </div>
 
     <div class="footer-col">
       <h4>Navegación</h4>
+      <a routerLink="/eventos">Todos los Eventos</a>
       <a routerLink="/conciertos">Conciertos</a>
       <a routerLink="/deportes">Deportes</a>
       <a routerLink="/teatro">Teatro</a>
@@ -20,22 +21,26 @@
 
     <div class="footer-col">
       <h4>Mi Cuenta</h4>
-      <a routerLink="/login">Iniciar Sesión</a>
-      <a routerLink="/registro">Registrarse</a>
-      <a routerLink="/perfil">Mi Perfil</a>
-      <a routerLink="/mis-boletos">Mis Boletos</a>
+      <ng-container *ngIf="!isLoggedIn">
+        <a routerLink="/login">Iniciar Sesión</a>
+        <a routerLink="/registro">Registrarse</a>
+      </ng-container>
+      <ng-container *ngIf="isLoggedIn">
+        <a routerLink="/perfil">Mi Perfil</a>
+        <a routerLink="/mis-boletas">Mis Boletas</a>
+      </ng-container>
     </div>
 
     <div class="footer-col">
       <h4>Ayuda</h4>
-      <a routerLink="/ayuda">Preguntas Frecuentes</a>
-      <a routerLink="/ayuda">Contáctanos</a>
-      <a routerLink="/ayuda">Términos y Condiciones</a>
+      <a routerLink="/ayuda" fragment="faq">Preguntas Frecuentes</a>
+      <a routerLink="/ayuda" fragment="contacto">Contáctanos</a>
+      <a routerLink="/ayuda" fragment="terminos">Términos y Condiciones</a>
     </div>
 
   </div>
 
   <div class="footer-bottom">
-    <p>&copy; 2026 VibePass. Todos los derechos reservados.</p>
+    <p>&copy; {{ anioActual }} VibePass. Todos los derechos reservados.</p>
   </div>
 </footer>

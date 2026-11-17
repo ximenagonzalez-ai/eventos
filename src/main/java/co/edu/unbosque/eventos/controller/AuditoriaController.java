@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.edu.unbosque.eventos.DTO.AuditoriaDTO;
+import co.edu.unbosque.eventos.dto.AuditoriaDTO;
 import co.edu.unbosque.eventos.model.Auditoria;
 import co.edu.unbosque.eventos.service.AuditoriaService;
 
 @RestController
-@RequestMapping("/api/auditorias")
+@RequestMapping("/auditoria")
 public class AuditoriaController {
 
     private final AuditoriaService auditoriaService;

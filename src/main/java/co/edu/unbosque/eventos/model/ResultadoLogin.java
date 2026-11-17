@@ -1,12 +1,15 @@
 package co.edu.unbosque.eventos.model;
 
-/** Resultado del login: la señal (estado) y, solo si fue exitoso, el token y el rol. */
+/**
+ * Resultado del intento de login.
+ * Encapsula el estado, el token JWT (si fue exitoso) y el rol del usuario.
+ */
 public class ResultadoLogin {
- 
+
     private final EstadoLogin estado;
     private final String token;
     private final String rol;
- 
+
     private ResultadoLogin(EstadoLogin estado, String token, String rol) {
         this.estado = estado;
         this.token = token;

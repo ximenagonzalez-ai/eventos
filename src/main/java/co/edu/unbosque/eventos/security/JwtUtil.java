@@ -19,54 +19,39 @@ import java.util.function.Function;
 /**
  * Utilidad para crear y validar los tokens JWT de nuestro proyecto.
  *
- * ¿Qué es un JWT?
- * Es una cadena de texto codificada (ej: "eyJhbGciOiJIUzI1NiJ9...") que guarda
- * dentro: el email del usuario, su rol y cuándo vence. El servidor NO guarda la
- * sesión — solo verifica que el token sea válido cada vez que llega una petición.
- *
  * Flujo:
  *   1. El usuario hace login → generateToken() crea el token
- *   2. El frontend guarda ese token y lo envía en cada petición: "Authorization: Bearer <token>"
- *   3. JwtAuthenticationFilter intercepta la petición, llama a validateToken()
+ *   2. El frontend lo guarda y lo envía en cada petición: "Authorization: Bearer <token>"
+ *   3. JwtAuthenticationFilter lo intercepta y llama a validateToken()
  *   4. Si es válido, Spring Security autoriza la petición
  *
- * La clave secreta (jwt.secret en application.properties) debe tener al menos 32 caracteres.
- * Nunca la subas al repositorio — usa variables de entorno en producción.
- *
- * Los tokens duran 24 horas (JWT_TOKEN_VALIDITY). Después hay que hacer login de nuevo.
+ * Los tokens duran 24 horas. La clave secreta está en application.properties (jwt.secret).
  */
 @Component
 public class JwtUtil {
 
-    /** Duración del token: 24 horas en milisegundos. */
-    private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
+    private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000; // 24 horas
 
     @Value("${jwt.secret:secureJwtSecretKeyForSpringFirstAppJWTImplementation}")
     private String secret;
 
-    /** Convierte el string secreto en una clave criptográfica para firmar el token. */
     private Key getSigningKey() {
-        byte[] keyBytes = secret.getBytes();
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    /** Extrae el email del usuario guardado dentro del token. */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    /** Extrae la fecha de vencimiento del token. */
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    /** Método genérico para extraer cualquier dato (claim) del token. */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    /** Parsea el token y devuelve todos sus datos internos. */
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -80,15 +65,14 @@ public class JwtUtil {
     }
 
     /**
-     * Crea un nuevo token JWT para el usuario.
-     * Incluye dentro: sus authorities (roles) y su rol como string para que el
-     * frontend pueda leerlo fácilmente y mostrar/ocultar secciones.
+     * Crea el token JWT con el email y el rol del usuario.
+     * El frontend puede leer el rol para mostrar/ocultar secciones.
      */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("authorities", userDetails.getAuthorities());
         if (userDetails instanceof Usuario u) {
-            claims.put("role", u.getRol().name()); // "USER" o "ADMIN"
+            claims.put("role", u.getRol().name());
         }
         return createToken(claims, userDetails.getUsername());
     }
@@ -103,10 +87,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    /**
-     * Verifica que el token sea válido: el email debe coincidir con el usuario
-     * y el token no debe estar vencido.
-     */
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

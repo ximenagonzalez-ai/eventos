@@ -4,7 +4,6 @@ import co.edu.unbosque.eventos.dto.UsuarioDTO;
 import co.edu.unbosque.eventos.model.Rol;
 import co.edu.unbosque.eventos.model.Usuario;
 import co.edu.unbosque.eventos.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +12,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Gestión de usuarios desde el panel de administración.
+ * A diferencia de AuthService (que maneja registro público + verificación de email),
+ * este servicio es para que el admin cree, edite o elimine usuarios directamente.
+ * Los usuarios creados aquí quedan verificados y activos de inmediato.
+ */
 @Service
-@RequiredArgsConstructor
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public long count() {
         return usuarioRepository.count();
@@ -46,22 +55,22 @@ public class UsuarioService {
     public int crear(UsuarioDTO dto) {
         if (usuarioRepository.existsByEmail(dto.getEmail().trim().toLowerCase())) return 1;
 
-        Usuario u = Usuario.builder()
-                .nombre(dto.getNombre().trim())
-                .email(dto.getEmail().trim().toLowerCase())
-                .contrasenaHash(passwordEncoder.encode(dto.getContrasena()))
-                .rol(dto.getRol() != null ? dto.getRol() : Rol.USER)
-                .activo(true)
-                .emailVerificado(true)   // creado por admin, ya verificado
-                .build();
+        Usuario u = new Usuario();
+        u.setNombre(dto.getNombre().trim());
+        u.setEmail(dto.getEmail().trim().toLowerCase());
+        u.setContrasenaHash(passwordEncoder.encode(dto.getContrasena()));
+        u.setRol(dto.getRol() != null ? dto.getRol() : Rol.USER);
+        u.setActivo(true);
+        u.setEmailVerificado(true); // creado por admin, ya verificado
 
         usuarioRepository.save(u);
         return 0;
     }
 
     /**
-     * Actualiza nombre, email, rol y activo. Si contrasena no es null la cambia.
-     * Retorna 0=ok, 1=email ya en uso por otro usuario, 2=no existe.
+     * Actualiza nombre, email, rol y estado activo.
+     * Si la contraseña no es nula ni vacía, también la cambia.
+     * Retorna 0=ok, 1=email ya en uso por otro usuario, 2=usuario no existe.
      */
     @Transactional
     public int actualizar(Long id, UsuarioDTO dto) {
@@ -69,10 +78,10 @@ public class UsuarioService {
         if (found.isEmpty()) return 2;
 
         Usuario u = found.get();
-
         String nuevoEmail = dto.getEmail().trim().toLowerCase();
-        if (!nuevoEmail.equals(u.getEmail())
-                && usuarioRepository.existsByEmail(nuevoEmail)) return 1;
+
+        // Verifica que el nuevo email no lo tenga otro usuario
+        if (!nuevoEmail.equals(u.getEmail()) && usuarioRepository.existsByEmail(nuevoEmail)) return 1;
 
         u.setNombre(dto.getNombre().trim());
         u.setEmail(nuevoEmail);
@@ -102,15 +111,15 @@ public class UsuarioService {
         return true;
     }
 
-    /** Convierte entidad → DTO (sin exponer el hash de contraseña) */
+    /** Convierte entidad → DTO. La contraseña (hash) nunca se expone. */
     private UsuarioDTO toDTO(Usuario u) {
-        return UsuarioDTO.builder()
-                .id(u.getId())
-                .nombre(u.getNombre())
-                .email(u.getEmail())
-                .rol(u.getRol())
-                .activo(u.isActivo())
-                .emailVerificado(u.isEmailVerificado())
-                .build();
+        UsuarioDTO dto = new UsuarioDTO();
+        dto.setId(u.getId());
+        dto.setNombre(u.getNombre());
+        dto.setEmail(u.getEmail());
+        dto.setRol(u.getRol());
+        dto.setActivo(u.isActivo());
+        dto.setEmailVerificado(u.isEmailVerificado());
+        return dto;
     }
 }

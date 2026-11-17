@@ -1,9 +1,12 @@
-export type RolUsuario = 'USER' | 'ADMIN';
+export type Rol = 'USER' | 'ADMIN' | 'INCOGNITO';
 
 export interface Usuario {
-  id: number;
+  id?: number;
   nombre: string;
   email: string;
-  rol: RolUsuario;
-  verificado?: boolean;
+  contrasena?: string;
+  rol: Rol;
+  activo: boolean;
+  emailVerificado?: boolean;
+  fechaCreacion?: string;
 }

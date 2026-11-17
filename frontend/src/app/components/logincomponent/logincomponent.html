@@ -34,6 +34,12 @@
           class="form-input">
       </div>
 
+      <div style="text-align: right; margin: -8px 0 16px;">
+        <a routerLink="/olvide-password" style="color: #a78bfa; text-decoration: none; font-size: 0.85rem;">
+          ¿Olvidaste tu contraseña?
+        </a>
+      </div>
+
       <button type="submit" class="btn-submit" [disabled]="isLoading">
         {{ isLoading ? 'Entrando...' : 'Entrar' }}
       </button>

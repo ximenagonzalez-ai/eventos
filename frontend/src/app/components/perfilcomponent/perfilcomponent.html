@@ -1,0 +1,51 @@
+<div class="perfil-container">
+  <div class="perfil-header">
+    <h2>Mi Cuenta</h2>
+    <p class="subtitle">Gestiona tu información personal y el acceso a tu cuenta VibePass.</p>
+  </div>
+
+  <p *ngIf="mensaje" class="alert-success">{{ mensaje }}</p>
+  <p *ngIf="error" class="alert-error">{{ error }}</p>
+
+  <div *ngIf="usuarioSeleccionado" class="perfil-card">
+    <div class="perfil-avatar">
+      {{ usuarioSeleccionado.nombre.charAt(0).toUpperCase() }}
+    </div>
+    <div class="perfil-info">
+      <h3>{{ usuarioSeleccionado.nombre }}</h3>
+      <p><span>Correo:</span> {{ usuarioSeleccionado.email }}</p>
+      <p><span>Rol:</span> <span class="badge-rol">{{ usuarioSeleccionado.rol }}</span></p>
+      <p><span>Estado:</span> <span class="badge-estado">{{ usuarioSeleccionado.activo ? 'Activo' : 'Inactivo' }}</span></p>
+    </div>
+  </div>
+
+  <div *ngIf="isAdmin && usuarios.length > 0" class="admin-users-section">
+    <h3>Administración de Usuarios</h3>
+    <div class="table-wrapper">
+      <table class="users-table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let u of usuarios">
+          <td>#{{ u.id }}</td>
+          <td>{{ u.nombre }}</td>
+          <td>{{ u.email }}</td>
+          <td><span class="badge-rol">{{ u.rol }}</span></td>
+          <td>{{ u.activo ? 'Activo' : 'Inactivo' }}</td>
+          <td>
+            <button (click)="eliminarUsuario(u.id)" class="btn-danger">Eliminar</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

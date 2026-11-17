@@ -1,45 +1,46 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   LoginRequest,
-  ReenviarVerificacionRequest,
+  LoginResponse,
   RegistroRequest,
-  VerificacionResponse,
+  OlvidePasswordRequest,
+  RestablecimientoPasswordRequest,
+  ReenviarVerificacionRequest,
+  AuthMessageResponse
 } from '../models/authmodel';
 import { Usuario } from '../models/usermodel';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
 
   constructor(private http: HttpClient) {}
 
-  login(credentials: LoginRequest): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials);
+  login(data: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, data);
   }
 
-  registro(userData: RegistroRequest): Observable<Usuario> {
-    return this.http.post<Usuario>(`${this.apiUrl}/registro`, userData);
+  registro(data: RegistroRequest): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.apiUrl}/registro`, data);
   }
 
-  verificarEmail(token: string): Observable<VerificacionResponse> {
-    const params = new HttpParams().set('token', token);
-    return this.http.post<VerificacionResponse>(
-      `${this.apiUrl}/verificar-email`,
-      null,
-      { params }
-    );
+  verificarEmail(token: string): Observable<AuthMessageResponse> {
+    return this.http.post<AuthMessageResponse>(`${this.apiUrl}/verificar-email?token=${token}`, {});
   }
 
-  reenviarVerificacion(
-    data: ReenviarVerificacionRequest
-  ): Observable<{ mensaje: string }> {
-    return this.http.post<{ mensaje: string }>(
-      `${this.apiUrl}/reenviar-verificacion`,
-      data
-    );
+  reenviarVerificacion(data: ReenviarVerificacionRequest): Observable<AuthMessageResponse> {
+    return this.http.post<AuthMessageResponse>(`${this.apiUrl}/reenviar-verificacion`, data);
+  }
+
+  olvidePassword(data: OlvidePasswordRequest): Observable<AuthMessageResponse> {
+    return this.http.post<AuthMessageResponse>(`${this.apiUrl}/olvide-password`, data);
+  }
+
+  restablecerPassword(data: RestablecimientoPasswordRequest): Observable<AuthMessageResponse> {
+    return this.http.post<AuthMessageResponse>(`${this.apiUrl}/restablecer-password`, data);
   }
 }

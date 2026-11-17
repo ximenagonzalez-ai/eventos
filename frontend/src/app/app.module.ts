@@ -12,6 +12,9 @@ import { RegistroComponent } from './components/registrocomponent/registrocompon
 import { VerificacionComponent } from './components/verificacioncomponent/verificacioncomponent';
 import { MiBoletaComponent } from './components/miboletacomponent/miboletacomponent';
 import { AuditoriaComponent } from './components/auditoriacomponent/auditoriacomponent';
+import { OlvidePasswordComponent } from './components/olvidepasswordcomponent/olvidepasswordcomponent';
+import { RestablecerPasswordComponent } from './components/restablecerpasswordcomponent/restablecerpasswordcomponent';
+import { PerfilComponent } from './components/perfilcomponent/perfilcomponent';
 import { routes } from './app.routes';
 
 @NgModule({
@@ -23,7 +26,10 @@ import { routes } from './app.routes';
     RegistroComponent,
     VerificacionComponent,
     MiBoletaComponent,
-    AuditoriaComponent
+    AuditoriaComponent,
+    OlvidePasswordComponent,
+    RestablecerPasswordComponent,
+    PerfilComponent
   ],
   imports: [BrowserModule, FormsModule, HttpClientModule, RouterModule.forRoot(routes)],
   providers: [],

@@ -13,7 +13,7 @@ import co.edu.unbosque.eventos.model.Auditoria;
 import co.edu.unbosque.eventos.service.AuditoriaService;
 
 @RestController
-@RequestMapping("/api/auditorias")
+@RequestMapping("/auditoria")
 public class AuditoriaController {
 
     private final AuditoriaService auditoriaService;

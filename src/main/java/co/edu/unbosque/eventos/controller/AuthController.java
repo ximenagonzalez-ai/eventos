@@ -18,10 +18,13 @@ import co.edu.unbosque.eventos.model.ResultadoVerificacion;
 import co.edu.unbosque.eventos.service.AuthService;
  
 import java.util.Map;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Optional;
- 
+
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Autenticación", description = "Registro, login, verificación de email y recuperación de contraseña")
 public class AuthController {
  
     private final AuthService authService;

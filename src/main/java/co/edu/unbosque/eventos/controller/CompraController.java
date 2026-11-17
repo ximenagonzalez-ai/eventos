@@ -11,9 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unbosque.eventos.dto.CompraDTO;
 import co.edu.unbosque.eventos.model.Compra;
 import co.edu.unbosque.eventos.service.CompraService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/compras")
+@Tag(name = "Compras", description = "Gestión de compras de boletas por usuario")
+@SecurityRequirement(name = "bearerAuth")
 public class CompraController {
 
     private final CompraService compraService;
@@ -22,6 +27,7 @@ public class CompraController {
         this.compraService = compraService;
     }
 
+    @Operation(summary = "Ver compras de un usuario")
     @GetMapping("/usuario/{usuarioId}")
     public List<CompraDTO> listarPorUsuario(@PathVariable Long usuarioId) {
         List<CompraDTO> respuesta = new ArrayList<>();

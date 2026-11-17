@@ -62,14 +62,15 @@ public class SecurityConfig {
                     "/api/auth/**",      // registro, login, verificación de email
                     "/swagger-ui/**",    // documentación de la API
                     "/swagger-ui.html",
-                    "/v3/api-docs/**"
+                    "/v3/api-docs/**",
+                    "/api/rutas/**"
                 ).permitAll()
 
                 // ---- Catálogo de eventos: cualquier usuario autenticado puede ver ----
                 .requestMatchers(
                     "/evento/getall", "/evento/getbyid/**", "/evento/bycategoria/**",
                     "/evento/byestado", "/evento/bycity", "/evento/search",
-                    "/evento/byfecha", "/evento/count"
+                    "/evento/byfecha", "/evento/count","/api/rutas/**","/api/preferencias/**"
                 ).hasAnyRole("USER", "ADMIN")
 
                 // ---- Gestión de eventos (crear, editar, borrar, sync Ticketmaster): solo ADMIN ----

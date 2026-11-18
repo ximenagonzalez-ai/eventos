@@ -1,5 +1,4 @@
 package co.edu.unbosque.eventos.dto;
-
 /** DTO con el resumen de ventas de boletas por evento. */
 public class ReporteDTO {
 
@@ -23,4 +22,23 @@ public class ReporteDTO {
 
     public Double getTotalIngresos() { return totalIngresos; }
     public void setTotalIngresos(Double totalIngresos) { this.totalIngresos = totalIngresos; }
+}
+import java.math.BigDecimal;
+
+public class ReporteDTO {
+
+    private String evento;
+    private Long boletasVendidas;
+    private BigDecimal totalVendido;
+
+    public ReporteDTO() {}
+
+    public String getEvento() { return evento; }
+    public void setEvento(String evento) { this.evento = evento; }
+
+    public Long getBoletasVendidas() { return boletasVendidas; }
+    public void setBoletasVendidas(Long boletasVendidas) { this.boletasVendidas = boletasVendidas; }
+
+    public BigDecimal getTotalVendido() { return totalVendido; }
+    public void setTotalVendido(BigDecimal totalVendido) { this.totalVendido = totalVendido; }
 }

@@ -1,0 +1,76 @@
+<div class="catalogo-container">
+  <div class="catalogo-header">
+    <div>
+      <h1>{{ tituloSeccion }}</h1>
+      <p>Descubre conciertos, obras de teatro, deportes y experiencias únicas.</p>
+    </div>
+
+    <button *ngIf="isAdmin" (click)="sincronizarTicketmaster()" class="btn-sync" [disabled]="isLoading">
+      {{ isLoading ? 'Sincronizando...' : 'Sincronizar Ticketmaster' }}
+    </button>
+  </div>
+
+
+  <div class="filtros-bar">
+    <div class="categorias-pills">
+      <button
+        class="pill"
+        [class.active]="categoriaSeleccionadaId === null"
+        (click)="filtrarPorCategoria(null)">
+        Todos
+      </button>
+      <button
+        *ngFor="let cat of categorias"
+        class="pill"
+        [class.active]="categoriaSeleccionadaId === cat.id"
+        (click)="filtrarPorCategoria(cat.id!)">
+        {{ cat.nombre }}
+      </button>
+    </div>
+
+    <div class="busqueda-ciudad">
+      <input
+        type="text"
+        [(ngModel)]="ciudadFiltro"
+        placeholder="Filtrar por ciudad (ej. Bogotá)..."
+        (keyup.enter)="filtrarPorCiudad()">
+      <button (click)="filtrarPorCiudad()" class="btn-filtrar">Filtrar</button>
+    </div>
+  </div>
+
+  <p *ngIf="mensaje" class="alert-success">{{ mensaje }}</p>
+  <p *ngIf="error" class="alert-error">{{ error }}</p>
+
+  <div *ngIf="isLoading" class="loading-state">Cargando eventos...</div>
+
+  <div *ngIf="!isLoading && eventos.length === 0 && !error" class="empty-state">
+    <h3>No se encontraron eventos</h3>
+    <p>Prueba cambiando los filtros o sincroniza nuevos eventos desde el panel de administrador.</p>
+  </div>
+
+
+  <div class="eventos-grid" *ngIf="!isLoading && eventos.length > 0">
+    <div class="evento-card" *ngFor="let ev of eventos">
+      <div class="evento-img-wrapper">
+        <img
+          [src]="ev.imagenUrl || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=800&q=80'"
+          [alt]="ev.nombre">
+        <span class="badge-categoria">{{ ev.categoriaNombre || 'Evento' }}</span>
+        <span class="badge-estado" [ngClass]="ev.estado.toLowerCase()">{{ ev.estado }}</span>
+      </div>
+
+      <div class="evento-body">
+        <span class="evento-fecha">{{ ev.fechaInicio | date:'dd MMM yyyy • h:mm a' }}</span>
+        <h3>{{ ev.nombre }}</h3>
+        <p class="evento-lugar" *ngIf="ev.lugar">
+          📍 {{ ev.lugar.nombre }} — {{ ev.lugar.ciudad }}
+        </p>
+        <p class="evento-desc">{{ ev.descripcion }}</p>
+
+        <div class="evento-footer">
+          <a [routerLink]="['/evento', ev.id]" class="btn-ver-detalle">Ver Boletas y Detalles</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

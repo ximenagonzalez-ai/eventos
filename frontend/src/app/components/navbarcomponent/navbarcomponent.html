@@ -1,0 +1,72 @@
+<header class="navbar-container">
+  <div class="navbar-main">
+    <a routerLink="/login" class="logo">VibePass<span>.</span></a>
+
+    <form (ngSubmit)="onSearch()" class="search-form">
+      <input type="text" name="search" [(ngModel)]="searchQuery" placeholder="Buscar..." class="search-input" required>
+      <button type="submit" class="search-btn">
+        <svg class="icon-fluid" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </button>
+    </form>
+
+    <div class="navbar-right-group">
+
+      <nav class="nav-links">
+        <a routerLink="/mis-boletas" routerLinkActive="active" class="nav-item">Mis Boletas</a>
+        <a *ngIf="isAdmin" routerLink="/auditoria" routerLinkActive="active" class="nav-item">Auditoría</a>
+        <a routerLink="/conciertos" class="nav-item">Conciertos</a>
+        <a routerLink="/deportes" class="nav-item">Deportes</a>
+        <a routerLink="/teatro" class="nav-item">Teatro</a>
+      </nav>
+
+      <div class="customizer-container" (click)="toggleCustomizer($event)">
+        <button class="customizer-btn" aria-label="Personalizar tema">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+          </svg>
+        </button>
+
+        <div class="customizer-panel" [class.active]="isCustomizerOpen">
+          <div class="panel-header">
+            <span>Cambiar tema</span>
+          </div>
+
+          <div class="color-grid">
+            <button class="color-circle theme-dark" (click)="changeTheme('dark')" title="Oscuro"></button>
+            <button class="color-circle theme-light" (click)="changeTheme('light')" title="Claro"></button>
+            <button class="color-circle theme-emerald" (click)="changeTheme('emerald')" title="Esmeralda"></button>
+            <button class="color-circle theme-purple" (click)="changeTheme('purple')" title="Morado"></button>
+            <button class="color-circle theme-sunset" (click)="changeTheme('sunset')" title="Atardecer"></button>
+            <button class="color-circle theme-pink" (click)="changeTheme('pink')" title="Rosa Neón"></button>
+            <button class="color-circle theme-wine" (click)="changeTheme('wine')" title="Rojo Vino"></button>
+            <button class="color-circle theme-gold" (click)="changeTheme('gold')" title="Dorado Lujo"></button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoggedIn" class="auth-actions">
+        <a routerLink="/login" class="nav-item">Iniciar Sesión</a>
+        <a routerLink="/registro" class="nav-item">Registrarse</a>
+      </div>
+
+      <div *ngIf="isLoggedIn" class="account-menu" (click)="toggleDropdown($event)">
+        <div class="account-trigger">
+          <svg class="icon-fluid" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          <span class="nav-item-text">Mi Cuenta</span>
+        </div>
+        <div class="dropdown-box" [class.active]="isDropdownOpen">
+          <a routerLink="/perfil">Mi Perfil</a>
+          <a routerLink="/mis-boletos">Mis Boletos</a>
+          <a *ngIf="isAdmin" routerLink="/auditoria">Auditoría</a>
+          <a routerLink="/configuracion">Ajustes</a>
+          <a routerLink="/logout" class="logout" (click)="logout($event)">Cerrar Sesión</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</header>

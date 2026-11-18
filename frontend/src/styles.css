@@ -1,0 +1,85 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+}
+
+:root,
+:root[data-theme="dark"] {
+  --bg-primary: #0d0e12;
+  --bg-card: #16181f;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --accent-color: #3b82f6;
+  --border-color: rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme="light"] {
+  --bg-primary: #f4f5f8;
+  --bg-card: #ffffff;
+  --text-main: #111827;
+  --text-muted: #6b7280;
+  --accent-color: #2563eb;
+  --border-color: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme="emerald"] {
+  --bg-primary: #06231e;
+  --bg-card: #0b352e;
+  --text-main: #e6f7f4;
+  --text-muted: rgba(230, 247, 244, 0.6);
+  --accent-color: #14b8a6;
+  --border-color: rgba(20, 184, 166, 0.2);
+}
+
+:root[data-theme="purple"] {
+  --bg-primary: #0f0c1b;
+  --bg-card: #1b1630;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --accent-color: #8b5cf6;
+  --border-color: rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme="sunset"] {
+  --bg-primary: #1f100a;
+  --bg-card: #2e170e;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --accent-color: #f97316;
+  --border-color: rgba(249, 115, 22, 0.2);
+}
+
+:root[data-theme="pink"] {
+  --bg-primary: #1a0b14;
+  --bg-card: #2c1323;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --accent-color: #ec4899;
+  --border-color: rgba(236, 72, 153, 0.2);
+}
+
+:root[data-theme="wine"] {
+  --bg-primary: #1a080c;
+  --bg-card: #2c1017;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --accent-color: #e11d48;
+  --border-color: rgba(225, 29, 72, 0.2);
+}
+:root[data-theme="gold"] {
+  --bg-primary: #1c180a;
+  --bg-card: #2b2510;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --accent-color: #eab308;
+  --border-color: rgba(234, 179, 8, 0.2);
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

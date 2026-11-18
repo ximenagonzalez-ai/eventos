@@ -1,0 +1,43 @@
+<div class="audit-container">
+  <h2>Registro de Auditoría del Sistema</h2>
+  <p class="subtitle">Monitoreo de actividades y eventos recientes de los usuarios.</p>
+
+  <div *ngIf="errorMessage" class="error-alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="isLoading" class="loading-spinner">
+    <p>Cargando registros de auditoría...</p>
+  </div>
+
+  <div *ngIf="!isLoading && auditorias.length === 0" class="empty-state">
+    <p>No hay registros de auditoría disponibles.</p>
+  </div>
+
+  <div *ngIf="!isLoading && auditorias.length > 0" class="table-responsive">
+    <table class="audit-table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario ID</th>
+        <th>Acción</th>
+        <th>Detalles</th>
+        <th>Fecha y Hora</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of auditorias">
+        <td>{{ item.id }}</td>
+        <td>{{ item.usuarioId }}</td>
+        <td>
+            <span class="badge" [ngClass]="item.accion.toLowerCase()">
+              {{ item.accion }}
+            </span>
+        </td>
+        <td>{{ item.detalles || 'Sin detalles adicionales' }}</td>
+        <td>{{ item.fechaAccion | date:'medium' }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

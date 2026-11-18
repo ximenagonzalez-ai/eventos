@@ -1,0 +1,32 @@
+<div class="ayuda-container">
+  <div class="ayuda-header">
+    <h1>Centro de Ayuda VibePass</h1>
+    <p>Encuentra respuestas rápidas, contáctanos o consulta nuestras políticas de uso.</p>
+  </div>
+
+  <section id="faq" class="ayuda-section">
+    <h2>Preguntas Frecuentes</h2>
+    <div class="faq-list">
+      <div class="faq-item" *ngFor="let item of faqs">
+        <h3>{{ item.pregunta }}</h3>
+        <p>{{ item.respuesta }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacto" class="ayuda-section">
+    <h2>Contáctanos</h2>
+    <p class="section-sub">¿Tienes algún inconveniente con tu cuenta o tus entradas? Escríbenos a nuestro correo de soporte:</p>
+    <p style="color: #a78bfa; font-weight: 600; margin: 0;">soporte.vibepass&#64;gmail.com</p>
+  </section>
+
+
+  <section id="terminos" class="ayuda-section">
+    <h2>Términos y Condiciones</h2>
+    <div class="terminos-box">
+      <p><strong>1. Uso de la Plataforma:</strong> VibePass actúa como canal oficial de gestión y reserva de entradas para eventos culturales, deportivos y musicales.</p>
+      <p><strong>2. Validez de Boletas:</strong> Cada boleta emitida cuenta con un código único e intransferible sujeto a verificación en el ingreso del recinto.</p>
+      <p><strong>3. Cambios y Cancelaciones:</strong> En caso de reprogramación o cancelación oficial por parte del organizador, se notificará al correo registrado en tu cuenta.</p>
+    </div>
+  </section>
+</div>

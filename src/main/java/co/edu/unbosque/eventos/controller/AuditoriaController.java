@@ -14,8 +14,6 @@ import co.edu.unbosque.eventos.service.AuditoriaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@RequestMapping("/api/auditorias")
-@Tag(name = "Auditoria", description = "Consulta de historial y trazabilidad de acciones por usuario y entidad")
 @RequestMapping("/auditoria")
 public class AuditoriaController {
 

@@ -2,8 +2,8 @@
   max-width: 1200px;
   margin: 36px auto 80px;
   padding: 0 24px;
-  color: #ffffff;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--text-main, #ffffff);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 .catalogo-header {
@@ -19,22 +19,24 @@
   margin: 0 0 6px;
   font-size: 2rem;
   font-weight: 700;
+  color: var(--text-main, #ffffff);
 }
 
 .catalogo-header p {
   margin: 0;
-  color: #9ca3af;
+  color: var(--text-muted, #9ca3af);
   font-size: 0.95rem;
 }
 
 .btn-sync {
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  background: var(--accent-color, #8b5cf6);
   color: #ffffff;
   border: none;
   padding: 10px 18px;
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+  font-family: inherit;
   transition: opacity 0.2s;
 }
 
@@ -50,7 +52,7 @@
   gap: 16px;
   margin-bottom: 32px;
   padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
 }
 
 .categorias-pills {
@@ -60,21 +62,22 @@
 }
 
 .pill {
-  background: #141226;
-  color: #d1d5db;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--bg-card, #141226);
+  color: var(--text-main, #d1d5db);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
   padding: 8px 16px;
   border-radius: 999px;
   font-size: 0.88rem;
   cursor: pointer;
+  font-family: inherit;
   transition: all 0.2s;
 }
 
 .pill:hover,
 .pill.active {
-  background: #8b5cf6;
+  background: var(--accent-color, #8b5cf6);
   color: #ffffff;
-  border-color: #8b5cf6;
+  border-color: var(--accent-color, #8b5cf6);
 }
 
 .busqueda-ciudad {
@@ -83,27 +86,39 @@
 }
 
 .busqueda-ciudad input {
-  background: #141226;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  background: var(--bg-card, #141226);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.14));
+  color: var(--text-main, #ffffff);
   padding: 8px 14px;
   border-radius: 10px;
   font-size: 0.9rem;
   outline: none;
+  font-family: inherit;
+}
+
+.busqueda-ciudad input::placeholder {
+  color: var(--text-muted, #9ca3af);
 }
 
 .busqueda-ciudad input:focus {
-  border-color: #8b5cf6;
+  border-color: var(--accent-color, #8b5cf6);
 }
 
 .btn-filtrar {
-  background: rgba(139, 92, 246, 0.2);
-  color: #c4b5fd;
-  border: 1px solid rgba(139, 92, 246, 0.45);
+  background: var(--bg-card, #141226);
+  color: var(--text-main, #ffffff);
+  border: 1px solid var(--accent-color, #8b5cf6);
   padding: 8px 16px;
   border-radius: 10px;
   cursor: pointer;
   font-weight: 500;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-filtrar:hover {
+  background: var(--accent-color, #8b5cf6);
+  color: #ffffff;
 }
 
 .eventos-grid {
@@ -113,18 +128,19 @@
 }
 
 .evento-card {
-  background: #141226;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-card, #141226);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
   border-radius: 18px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
   transition: transform 0.2s, border-color 0.2s;
 }
 
 .evento-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(139, 92, 246, 0.45);
+  border-color: var(--accent-color, #8b5cf6);
 }
 
 .evento-img-wrapper {
@@ -143,8 +159,9 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: rgba(11, 10, 20, 0.85);
-  color: #c4b5fd;
+  background: var(--bg-card, rgba(11, 10, 20, 0.85));
+  color: var(--text-main, #ffffff);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 0.78rem;
@@ -155,7 +172,7 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(16, 185, 129, 0.85);
+  background: rgba(16, 185, 129, 0.9);
   color: #ffffff;
   padding: 4px 10px;
   border-radius: 999px;
@@ -171,7 +188,7 @@
 }
 
 .evento-fecha {
-  color: #a78bfa;
+  color: var(--accent-color, #a78bfa);
   font-size: 0.82rem;
   font-weight: 600;
   margin-bottom: 6px;
@@ -180,16 +197,17 @@
 .evento-body h3 {
   margin: 0 0 8px;
   font-size: 1.2rem;
+  color: var(--text-main, #ffffff);
 }
 
 .evento-lugar {
-  color: #9ca3af;
+  color: var(--text-muted, #9ca3af);
   font-size: 0.88rem;
   margin: 0 0 10px;
 }
 
 .evento-desc {
-  color: #d1d5db;
+  color: var(--text-muted, #d1d5db);
   font-size: 0.88rem;
   line-height: 1.45;
   display: -webkit-box;
@@ -206,7 +224,7 @@
 .btn-ver-detalle {
   display: block;
   text-align: center;
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  background: var(--accent-color, #8b5cf6);
   color: #ffffff;
   text-decoration: none;
   padding: 10px;
@@ -224,13 +242,13 @@
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #9ca3af;
+  color: var(--text-muted, #9ca3af);
 }
 
 .alert-success {
   background: rgba(16, 185, 129, 0.15);
   border: 1px solid rgba(16, 185, 129, 0.4);
-  color: #6ee7b7;
+  color: #10b981;
   padding: 12px 16px;
   border-radius: 10px;
   margin-bottom: 20px;
@@ -239,7 +257,7 @@
 .alert-error {
   background: rgba(239, 68, 68, 0.15);
   border: 1px solid rgba(239, 68, 68, 0.4);
-  color: #fca5a5;
+  color: #ef4444;
   padding: 12px 16px;
   border-radius: 10px;
   margin-bottom: 20px;

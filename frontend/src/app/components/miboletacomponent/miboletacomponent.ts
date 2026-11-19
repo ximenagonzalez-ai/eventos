@@ -1,91 +1,132 @@
 import { Component, OnInit } from '@angular/core';
-import { Boleta } from '../../models/boletamodel';
+import { Boleta, CompraDTO } from '../../models/boletamodel';
+import { BoletaService } from '../../services/boletaservice';
+import { obtenerMensajeError } from '../../utils/errorhelper';
 
 @Component({
   selector: 'app-miboletacomponent',
   standalone: false,
   templateUrl: './miboletacomponent.html',
-  styleUrl: './miboletacomponent.css',
+  styleUrls: ['./miboletacomponent.css']
 })
 export class MiBoletaComponent implements OnInit {
-  mostrarModal: boolean = false;
+  usuarioId = 1;
+  esAdmin = false;
+  mostrarModal = false;
 
-  get esAdmin(): boolean {
-    return localStorage.getItem('rol') === 'ADMIN' || localStorage.getItem('role') === 'ADMIN';
-  }
+  compras: CompraDTO[] = [];
+  boletas: Boleta[] = [];
+  boletasPorCompra: Record<number, Boleta[]> = {};
 
-  boletas: Boleta[] = [
-    {
-      id: 1,
-      codigo: 'BOL-109283',
-      eventoNombre: 'Concierto en Vivo',
-      tipoBoleta: 'VIP',
-      precio: 250000,
-      fechaEmision: '2026-11-10',
-      estado: 'ACTIVA',
-    },
-  ];
-
-  nuevaBoleta: Boleta = {
-    codigo: '',
+  nuevaBoleta: { eventoNombre: string; tipoBoleta: string; precio: number } = {
     eventoNombre: '',
     tipoBoleta: 'General',
-    precio: 0,
-    fechaEmision: new Date().toISOString().split('T')[0],
-    estado: 'ACTIVA',
+    precio: 0
   };
 
-  ngOnInit(): void {}
+  cargando = false;
+  error = '';
+
+  constructor(private boletaService: BoletaService) {}
+
+  ngOnInit(): void {
+    this.cargarCompras();
+  }
 
   abrirModal(): void {
-    if (!this.esAdmin) return;
     this.mostrarModal = true;
   }
 
   cerrarModal(): void {
     this.mostrarModal = false;
-    this.limpiarFormulario();
-  }
-
-  generarCodigo(): string {
-    return 'BOL-' + Math.floor(100000 + Math.random() * 900000);
   }
 
   crearBoleta(): void {
-    if (!this.esAdmin) return;
-
-    if (!this.nuevaBoleta.eventoNombre || this.nuevaBoleta.precio <= 0) {
-      alert('Por favor complete el nombre del evento y un precio válido.');
+    if (!this.nuevaBoleta.eventoNombre.trim()) {
+      this.error = 'Ingresa el nombre del evento para la boleta.';
       return;
     }
 
-    const boletaAEmitir: Boleta = {
-      ...this.nuevaBoleta,
-      id: this.boletas.length + 1,
-      codigo: this.generarCodigo(),
+    this.error = '';
+    const creada: Boleta = {
+      id: Date.now(),
+      codigo: `BOL-${Math.floor(100000 + Math.random() * 900000)}`,
+      eventoNombre: this.nuevaBoleta.eventoNombre.trim(),
+      tipoBoleta: this.nuevaBoleta.tipoBoleta,
+      precio: Number(this.nuevaBoleta.precio) || 0,
+      fechaEmision: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      estado: 'ACTIVA'
     };
 
-    this.boletas.push(boletaAEmitir);
+    this.boletas = [creada, ...this.boletas];
+    this.nuevaBoleta = {
+      eventoNombre: '',
+      tipoBoleta: 'General',
+      precio: 0
+    };
     this.cerrarModal();
   }
 
-  limpiarFormulario(): void {
-    this.nuevaBoleta = {
-      codigo: '',
-      eventoNombre: '',
-      tipoBoleta: 'General',
-      precio: 0,
-      fechaEmision: new Date().toISOString().split('T')[0],
-      estado: 'ACTIVA',
-    };
+  cargarCompras(): void {
+    this.cargando = true;
+    this.error = '';
+
+    this.boletaService.listarComprasPorUsuario(this.usuarioId).subscribe({
+      next: (compras) => {
+        this.compras = compras;
+        this.boletas = [];
+        this.boletasPorCompra = {};
+        this.cargando = false;
+
+        compras.forEach((c) => this.cargarBoletas(c.id, c.estado));
+      },
+      error: (err) => {
+        this.error = obtenerMensajeError(err, 'No se pudieron cargar tus compras.');
+        this.cargando = false;
+      }
+    });
+  }
+
+  cargarBoletas(compraId: number, estadoCompra?: string): void {
+    this.boletaService.listarBoletasPorCompra(compraId, estadoCompra).subscribe({
+      next: (boletas) => {
+        this.boletasPorCompra[compraId] = boletas;
+        this.boletas = [...this.boletas, ...boletas];
+      },
+      error: (err) => {
+        this.boletasPorCompra[compraId] = [];
+        this.error = obtenerMensajeError(err, 'No se pudieron cargar algunas boletas.');
+      }
+    });
   }
 
   cancelarBoleta(id?: number): void {
-    if (!this.esAdmin) return;
-
-    const boleta = this.boletas.find((b) => b.id === id);
-    if (boleta) {
-      boleta.estado = 'CANCELADA';
+    if (!id) {
+      return;
     }
+
+    this.error = '';
+    let compraIdEncontrada = id;
+    for (const [key, lista] of Object.entries(this.boletasPorCompra)) {
+      if (lista.some((b) => b.id === id)) {
+        compraIdEncontrada = Number(key);
+        break;
+      }
+    }
+
+    this.boletaService.cancelarCompra(compraIdEncontrada).subscribe({
+      next: () => {
+        this.boletas = this.boletas.map((b) =>
+          b.id === id ? { ...b, estado: 'CANCELADA' } : b
+        );
+      },
+      error: (err) => {
+        this.error = obtenerMensajeError(err, 'No se pudo cancelar la compra.');
+      }
+    });
+  }
+
+  descargarPdfBoleta(): void {
+    window.print();
   }
 }

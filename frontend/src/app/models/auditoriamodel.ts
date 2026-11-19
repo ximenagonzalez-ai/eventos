@@ -1,7 +1,9 @@
-export interface Auditoria {
-  id?: number;
-  usuarioId: number;
+export interface AuditoriaDTO {
+  id: number;
+  usuarioId?: number;
   accion: string;
-  detalles?: string;
-  fechaAccion: string;
+  entidad: string;
+  entidadId?: number;
+  detalle?: string;
+  fechaRegistro?: string;
 }

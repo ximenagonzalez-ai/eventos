@@ -1,10 +1,18 @@
 <div class="boleta-container">
   <div class="header-gestion">
     <h2>{{ esAdmin ? 'Gestión de Boletas' : 'Mis Boletas' }}</h2>
-    <button *ngIf="esAdmin" type="button" class="btn-primary" (click)="abrirModal()">
-      + Emitir Nueva Boleta
-    </button>
+    <div class="header-acciones">
+      <button type="button" class="btn-secondary" (click)="descargarPdfBoleta()">
+        Descargar / Imprimir PDF
+      </button>
+      <button *ngIf="esAdmin" type="button" class="btn-primary" (click)="abrirModal()">
+        + Emitir Nueva Boleta
+      </button>
+    </div>
   </div>
+
+  <p *ngIf="cargando">Cargando boletas...</p>
+  <p *ngIf="error" class="error-msg">{{ error }}</p>
 
   <div class="modal-backdrop" *ngIf="esAdmin && mostrarModal" (click)="cerrarModal()">
     <div class="card form-card modal-content" (click)="$event.stopPropagation()">
@@ -60,7 +68,9 @@
   <div class="card list-card">
     <h3>Mis Boletas Registradas</h3>
 
-    <div class="grid-boletas">
+    <p *ngIf="!cargando && boletas.length === 0">No tienes boletas registradas todavía.</p>
+
+    <div class="grid-boletas" *ngIf="boletas.length > 0">
       <div
         *ngFor="let item of boletas"
         class="ticket-item"
@@ -78,8 +88,10 @@
           <p class="fecha"><small>Fecha: {{ item.fechaEmision }}</small></p>
         </div>
 
-        <div class="ticket-actions" *ngIf="esAdmin && item.estado === 'ACTIVA'">
-          <button type="button" (click)="cancelarBoleta(item.id)" class="btn-cancel">Anular</button>
+        <div class="ticket-actions" *ngIf="item.estado === 'ACTIVA'">
+          <button type="button" (click)="cancelarBoleta(item.id!)" class="btn-cancel">
+            Anular
+          </button>
         </div>
       </div>
     </div>

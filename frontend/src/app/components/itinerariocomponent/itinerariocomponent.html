@@ -1,0 +1,55 @@
+<section class="itinerario-page">
+  <div class="itinerario-header">
+    <div>
+      <h1>Mi Itinerario</h1>
+      <p class="subtitulo">Organiza tus agendas personales y suma eventos por ID.</p>
+    </div>
+
+    <form class="crear-form" (ngSubmit)="crearItinerario()">
+      <input
+        type="text"
+        [(ngModel)]="nombreNuevoItinerario"
+        name="nombreNuevoItinerario"
+        placeholder="Nombre del itinerario (ej. Fin de semana)"
+        required
+      />
+      <button type="submit" class="btn-primary">Crear Itinerario</button>
+    </form>
+  </div>
+
+  <p *ngIf="error" class="msg-error">{{ error }}</p>
+  <p *ngIf="cargando" class="msg-info">Cargando itinerarios...</p>
+
+  <div *ngIf="!cargando && itinerarios.length === 0" class="empty-card">
+    <p>Aún no tienes itinerarios creados.</p>
+  </div>
+
+  <div class="itinerarios-grid" *ngIf="itinerarios.length > 0">
+    <article class="itinerario-card" *ngFor="let item of itinerarios">
+      <div class="card-top">
+        <h2>{{ item.nombre }}</h2>
+        <span class="fecha" *ngIf="item.fechaCreacion">{{ item.fechaCreacion }}</span>
+      </div>
+
+      <ul class="eventos-lista" *ngIf="item.eventos?.length; else sinEventos">
+        <li *ngFor="let ev of item.eventos">{{ ev }}</li>
+      </ul>
+      <ng-template #sinEventos>
+        <p class="sin-eventos">Sin eventos agregados todavía.</p>
+      </ng-template>
+
+      <div class="agregar-evento-row">
+        <input
+          type="number"
+          min="1"
+          [(ngModel)]="eventoIdPorItinerario[item.id]"
+          [name]="'eventoId_' + item.id"
+          placeholder="ID del evento"
+        />
+        <button type="button" class="btn-secondary" (click)="agregarEvento(item.id)">
+          Agregar evento
+        </button>
+      </div>
+    </article>
+  </div>
+</section>

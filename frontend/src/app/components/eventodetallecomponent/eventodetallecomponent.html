@@ -25,7 +25,12 @@
           <h3>📍 Ubicación</h3>
           <p><strong>{{ evento.lugar.nombre }}</strong></p>
           <p>{{ evento.lugar.direccion }} — {{ evento.lugar.ciudad }}</p>
-          <button (click)="abrirMapa()" class="btn-mapa">Cómo llegar (Google Maps)</button>
+          <div class="acciones-ubicacion">
+            <a *ngIf="evento.id" [routerLink]="['/evento', evento.id, 'ruta']" class="btn-ruta">
+              🧭 Ver ruta paso a paso
+            </a>
+            <button (click)="abrirMapa()" class="btn-mapa">Cómo llegar (Google Maps)</button>
+          </div>
         </div>
       </div>
 

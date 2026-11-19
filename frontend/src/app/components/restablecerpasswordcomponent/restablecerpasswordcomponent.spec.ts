@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Restablecerpasswordcomponent } from './restablecerpasswordcomponent';
+import { RestablecerPasswordComponent } from './restablecerpasswordcomponent';
 
-describe('Restablecerpasswordcomponent', () => {
-  let component: Restablecerpasswordcomponent;
-  let fixture: ComponentFixture<Restablecerpasswordcomponent>;
+describe('RestablecerPasswordComponent', () => {
+  let component: RestablecerPasswordComponent;
+  let fixture: ComponentFixture<RestablecerPasswordComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Restablecerpasswordcomponent],
+      declarations: [RestablecerPasswordComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Restablecerpasswordcomponent);
+    fixture = TestBed.createComponent(RestablecerPasswordComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

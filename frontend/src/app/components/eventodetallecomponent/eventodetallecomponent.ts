@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EventoService } from '../../services/eventoservice';
 import { Evento } from '../../models/eventomodel';
+import { obtenerMensajeError } from '../../utils/errorhelper';
 
 @Component({
   selector: 'app-evento-detalle',
@@ -27,11 +28,14 @@ export class EventoDetalleComponent implements OnInit {
           this.evento = data;
           this.isLoading = false;
         },
-        error: () => {
-          this.error = 'No se encontró el evento solicitado.';
+        error: (err) => {
+          this.error = obtenerMensajeError(err, 'No se encontró el evento solicitado.');
           this.isLoading = false;
         }
       });
+    } else {
+      this.error = 'El identificador del evento no es válido.';
+      this.isLoading = false;
     }
   }
 

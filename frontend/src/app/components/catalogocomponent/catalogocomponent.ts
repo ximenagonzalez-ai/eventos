@@ -4,6 +4,7 @@ import { EventoService } from '../../services/eventoservice';
 import { CategoriaService } from '../../services/categoriaservice';
 import { Evento } from '../../models/eventomodel';
 import { Categoria } from '../../models/categoriamodel';
+import { obtenerMensajeError } from '../../utils/errorhelper';
 
 @Component({
   selector: 'app-catalogo',
@@ -42,7 +43,8 @@ export class CatalogoComponent implements OnInit {
         this.categorias = cats || [];
         this.escucharRuta();
       },
-      error: () => {
+      error: (err) => {
+        this.error = obtenerMensajeError(err, 'No se pudieron cargar las categorías.');
         this.escucharRuta();
       }
     });
@@ -95,8 +97,11 @@ export class CatalogoComponent implements OnInit {
         this.eventos = data || [];
         this.isLoading = false;
       },
-      error: () => {
-        this.error = 'No se pudieron cargar los eventos. Verifica que tengas sesión iniciada.';
+      error: (err) => {
+        this.error = obtenerMensajeError(
+          err,
+          'No se pudieron cargar los eventos. Verifica que tengas sesión iniciada.'
+        );
         this.isLoading = false;
       }
     });
@@ -114,13 +119,15 @@ export class CatalogoComponent implements OnInit {
     if (cat) this.tituloSeccion = cat.nombre;
 
     this.isLoading = true;
+    this.error = '';
     this.eventoService.obtenerPorCategoria(categoriaId).subscribe({
       next: (data) => {
         this.eventos = data || [];
         this.isLoading = false;
       },
-      error: () => {
+      error: (err) => {
         this.eventos = [];
+        this.error = obtenerMensajeError(err, 'No se pudieron filtrar los eventos por categoría.');
         this.isLoading = false;
       }
     });
@@ -132,13 +139,15 @@ export class CatalogoComponent implements OnInit {
       return;
     }
     this.isLoading = true;
+    this.error = '';
     this.eventoService.obtenerPorCiudad(this.ciudadFiltro).subscribe({
       next: (data) => {
         this.eventos = data || [];
         this.isLoading = false;
       },
-      error: () => {
+      error: (err) => {
         this.eventos = [];
+        this.error = obtenerMensajeError(err, 'No se pudieron filtrar los eventos por ciudad.');
         this.isLoading = false;
       }
     });
@@ -150,13 +159,15 @@ export class CatalogoComponent implements OnInit {
       return;
     }
     this.isLoading = true;
+    this.error = '';
     this.eventoService.buscarPorNombre(this.busquedaTexto).subscribe({
       next: (data) => {
         this.eventos = data || [];
         this.isLoading = false;
       },
-      error: () => {
+      error: (err) => {
         this.eventos = [];
+        this.error = obtenerMensajeError(err, 'No se pudo realizar la búsqueda de eventos.');
         this.isLoading = false;
       }
     });
@@ -171,8 +182,8 @@ export class CatalogoComponent implements OnInit {
         this.mensaje = res;
         this.cargarTodos();
       },
-      error: () => {
-        this.error = 'Error al sincronizar eventos desde Ticketmaster.';
+      error: (err) => {
+        this.error = obtenerMensajeError(err, 'Error al sincronizar eventos desde Ticketmaster.');
         this.isLoading = false;
       }
     });

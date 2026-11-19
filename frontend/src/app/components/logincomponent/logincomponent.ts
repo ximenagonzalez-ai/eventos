@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/authservice';
 import { LoginRequest } from '../../models/authmodel';
+import { obtenerMensajeError } from '../../utils/errorhelper';
 
 @Component({
   selector: 'app-login',
@@ -36,17 +37,35 @@ export class LoginComponent {
     this.isLoading = true;
 
     this.authService.login(request).subscribe({
-      next: () => {
+      next: (res: any) => {
         this.isLoading = false;
+
+        const token = res?.token || res?.jwt || res?.accessToken;
+        const rol = res?.rol || res?.role || res?.usuario?.rol;
+        const usuarioId = res?.id || res?.usuarioId || res?.usuario?.id;
+        const email = res?.email || res?.usuario?.email || this.credentials.email;
+
+        if (token) {
+          localStorage.setItem('token', token);
+        }
+        if (rol) {
+          localStorage.setItem('rol', rol);
+        }
+        if (usuarioId) {
+          localStorage.setItem('usuarioId', String(usuarioId));
+        }
+        if (email) {
+          localStorage.setItem('email', email);
+        }
+
         this.router.navigate(['/mis-boletas']);
       },
       error: (err) => {
         this.isLoading = false;
-        if (err.status === 401 || err.status === 403) {
-          this.errorMessage = 'Correo o contraseña incorrectos, o cuenta sin verificar.';
-        } else {
-          this.errorMessage = 'Error al conectar con el servidor. Inténtalo más tarde.';
-        }
+        this.errorMessage = obtenerMensajeError(
+          err,
+          'Correo o contraseña incorrectos, o cuenta sin verificar.'
+        );
       }
     });
   }

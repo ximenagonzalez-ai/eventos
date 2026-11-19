@@ -1,0 +1,232 @@
+.ruta-container {
+  max-width: 900px;
+  margin: 32px auto 80px;
+  padding: 0 24px;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.back-link {
+  display: inline-block;
+  color: #a78bfa;
+  text-decoration: none;
+  margin-bottom: 20px;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.ruta-header {
+  margin-bottom: 24px;
+}
+
+.badge-cat {
+  display: inline-block;
+  background: #8b5cf6;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.ruta-header h1 {
+  font-size: 1.8rem;
+  margin: 0 0 8px;
+}
+
+.lugar-info {
+  color: #9ca3af;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.mapa-wrapper {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  margin-bottom: 28px;
+}
+
+.mapa-wrapper iframe {
+  display: block;
+}
+
+.sin-coords {
+  background: #141226;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 32px;
+  text-align: center;
+  color: #9ca3af;
+  margin-bottom: 24px;
+}
+
+.ruta-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.paso-card {
+  background: #141226;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.paso-card h3 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+}
+
+.texto-gris {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  margin: 0 0 16px;
+}
+
+.texto-verde {
+  color: #34d399;
+  font-size: 0.9rem;
+  margin: 0 0 16px;
+}
+
+.btn-ubicacion {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.btn-ubicacion:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.35);
+}
+
+.btn-ubicacion:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.resumen-ruta {
+  display: flex;
+  gap: 20px;
+}
+
+.resumen-item {
+  flex: 1;
+  background: #141226;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.resumen-icon {
+  font-size: 2rem;
+}
+
+.resumen-label {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 0.8rem;
+}
+
+.resumen-valor {
+  margin: 4px 0 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #a78bfa;
+}
+
+.instrucciones-box {
+  background: #141226;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.instrucciones-box h3 {
+  margin: 0 0 20px;
+  font-size: 1.1rem;
+}
+
+.lista-pasos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.paso-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.paso-icono {
+  font-size: 1.3rem;
+  min-width: 28px;
+  text-align: center;
+}
+
+.paso-texto {
+  color: #e5e7eb;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.botones-ruta {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-gmaps {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-gmaps:hover {
+  opacity: 0.9;
+}
+
+.alert-error {
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.loading-state {
+  text-align: center;
+  color: #9ca3af;
+  padding: 40px 0;
+}
+
+@media (max-width: 600px) {
+  .resumen-ruta {
+    flex-direction: column;
+  }
+}

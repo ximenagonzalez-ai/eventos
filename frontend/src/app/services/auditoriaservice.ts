@@ -1,17 +1,32 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Auditoria } from '../models/auditoriamodel';
+import { AuditoriaDTO } from '../models/auditoriamodel';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuditoriaService {
-  private apiUrl = 'http://localhost:8080/api/auditorias';
+  private baseUrl = 'http://localhost:8080/auditoria';
 
   constructor(private http: HttpClient) {}
 
-  obtenerAuditoriasPorUsuario(usuarioId: number): Observable<Auditoria[]> {
-    return this.http.get<Auditoria[]>(`${this.apiUrl}/usuario/${usuarioId}`);
+  private obtenerHeaders(): { headers?: HttpHeaders } {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return {};
+    }
+    return {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`
+      })
+    };
+  }
+
+  listarPorUsuario(usuarioId: number): Observable<AuditoriaDTO[]> {
+    return this.http.get<AuditoriaDTO[]>(
+      `${this.baseUrl}/usuario/${usuarioId}`,
+      this.obtenerHeaders()
+    );
   }
 }

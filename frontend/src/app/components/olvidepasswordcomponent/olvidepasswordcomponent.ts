@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/authservice';
+import { obtenerMensajeError } from '../../utils/errorhelper';
 
 @Component({
   selector: 'app-olvide-password',
@@ -16,7 +17,10 @@ export class OlvidePasswordComponent {
   constructor(private authService: AuthService) {}
 
   onSubmit(): void {
-    if (!this.email.trim()) return;
+    if (!this.email.trim()) {
+      this.error = 'Ingresa tu correo electrónico.';
+      return;
+    }
     this.isLoading = true;
     this.mensaje = '';
     this.error = '';
@@ -27,7 +31,7 @@ export class OlvidePasswordComponent {
         this.isLoading = false;
       },
       error: (err) => {
-        this.error = err.error?.mensaje || 'Ocurrió un error al procesar la solicitud.';
+        this.error = obtenerMensajeError(err, 'Ocurrió un error al procesar la solicitud.');
         this.isLoading = false;
       }
     });

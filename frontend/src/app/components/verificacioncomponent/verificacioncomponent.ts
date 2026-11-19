@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/authservice';
 import { VerificacionResponse } from '../../models/authmodel';
+import { obtenerMensajeError } from '../../utils/errorhelper';
 
 @Component({
   selector: 'app-verificacioncomponent',
@@ -41,10 +42,13 @@ export class VerificacionComponent implements OnInit {
         this.exito = true;
         this.mensaje = res.mensaje || '¡Tu correo ha sido verificado con éxito!';
       },
-      error: () => {
+      error: (err) => {
         this.cargando = false;
         this.error = true;
-        this.mensaje = 'El enlace de verificación ha expirado o no es válido.';
+        this.mensaje = obtenerMensajeError(
+          err,
+          'El enlace de verificación ha expirado o no es válido.'
+        );
       },
     });
   }

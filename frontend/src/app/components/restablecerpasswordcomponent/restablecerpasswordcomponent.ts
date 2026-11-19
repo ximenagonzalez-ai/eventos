@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/authservice';
+import { obtenerMensajeError } from '../../utils/errorhelper';
 
 @Component({
   selector: 'app-restablecer-password',
@@ -45,12 +46,15 @@ export class RestablecerPasswordComponent implements OnInit {
       nuevaContrasena: this.nuevaContrasena
     }).subscribe({
       next: (res) => {
-        this.mensaje = res.mensaje;
+        this.mensaje = res.mensaje || 'Contraseña restablecida correctamente.';
         this.isLoading = false;
         setTimeout(() => this.router.navigate(['/login']), 2500);
       },
       error: (err) => {
-        this.error = err.error?.mensaje || 'No se pudo restablecer la contraseña.';
+        this.error = obtenerMensajeError(
+          err,
+          'No se pudo restablecer la contraseña.'
+        );
         this.isLoading = false;
       }
     });

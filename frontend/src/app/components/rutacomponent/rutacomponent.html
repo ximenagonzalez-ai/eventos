@@ -1,0 +1,97 @@
+<div class="ruta-container">
+  <a [routerLink]="['/evento', evento?.id]" class="back-link">← Volver al evento</a>
+
+  <div *ngIf="isLoading" class="loading-state">Cargando...</div>
+  <p *ngIf="error" class="alert-error">{{ error }}</p>
+
+  <div *ngIf="evento && !isLoading">
+
+    <div class="ruta-header">
+      <div class="evento-info">
+        <span class="badge-cat">{{ evento.categoriaNombre }}</span>
+        <h1>Cómo llegar a {{ evento.nombre }}</h1>
+        <p class="lugar-info" *ngIf="evento.lugar">
+          📍 {{ evento.lugar.nombre }} — {{ evento.lugar.direccion }}, {{ evento.lugar.ciudad }}
+        </p>
+      </div>
+    </div>
+
+    <div class="mapa-wrapper" *ngIf="mapaUrl">
+      <iframe
+        [src]="mapaUrl"
+        width="100%"
+        height="380"
+        frameborder="0"
+        scrolling="no"
+        marginheight="0"
+        marginwidth="0"
+        title="Mapa del evento">
+      </iframe>
+    </div>
+
+    <div *ngIf="!evento.lugar?.latitud" class="sin-coords">
+      <p>Este evento no tiene coordenadas de ubicación registradas.</p>
+      <button (click)="abrirEnGoogleMaps()" class="btn-gmaps">
+        Buscar en Google Maps
+      </button>
+    </div>
+
+    <div class="ruta-panel" *ngIf="evento.lugar?.latitud">
+
+      <div class="paso-card">
+        <h3>📡 Tu Ubicación</h3>
+        <p *ngIf="!origenLat" class="texto-gris">
+          Permite el acceso a tu ubicación para calcular la ruta desde donde estás.
+        </p>
+        <p *ngIf="origenLat" class="texto-verde">
+          ✅ Ubicación obtenida ({{ origenLat | number:'1.4-4' }}, {{ origenLng | number:'1.4-4' }})
+        </p>
+        <p *ngIf="errorUbicacion" class="alert-error">{{ errorUbicacion }}</p>
+
+        <button
+          (click)="obtenerMiUbicacion()"
+          class="btn-ubicacion"
+          [disabled]="obteniendoUbicacion">
+          {{ obteniendoUbicacion ? '📡 Obteniendo ubicación...' : origenLat ? '🔄 Actualizar mi ubicación' : '📍 Usar mi ubicación actual' }}
+        </button>
+      </div>
+
+      <div class="resumen-ruta" *ngIf="distanciaTotal">
+        <div class="resumen-item">
+          <span class="resumen-icon">🛣️</span>
+          <div>
+            <p class="resumen-label">Distancia</p>
+            <p class="resumen-valor">{{ distanciaTotal }}</p>
+          </div>
+        </div>
+        <div class="resumen-item">
+          <span class="resumen-icon">⏱️</span>
+          <div>
+            <p class="resumen-label">Tiempo estimado</p>
+            <p class="resumen-valor">{{ duracionTotal }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="calculandoRuta" class="loading-state">Calculando ruta...</div>
+      <p *ngIf="errorRuta" class="alert-error">{{ errorRuta }}</p>
+
+      <div class="instrucciones-box" *ngIf="instrucciones.length > 0">
+        <h3>🧭 Instrucciones paso a paso</h3>
+        <ol class="lista-pasos">
+          <li *ngFor="let paso of instrucciones; let i = index" class="paso-item">
+            <span class="paso-icono">{{ iconoPaso[i] }}</span>
+            <span class="paso-texto">{{ paso }}</span>
+          </li>
+        </ol>
+      </div>
+
+      <div class="botones-ruta">
+        <button (click)="abrirEnGoogleMaps()" class="btn-gmaps">
+          🗺️ Abrir en Google Maps
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

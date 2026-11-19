@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/authservice';
 import { RegistroRequest } from '../../models/authmodel';
+import { obtenerMensajeError } from '../../utils/errorhelper';
 
 @Component({
   selector: 'app-registro',
@@ -59,13 +60,10 @@ export class RegistroComponent {
       },
       error: (err) => {
         this.isLoading = false;
-        if (err.status === 409) {
-          this.errorMessage = 'Este correo electrónico ya está registrado.';
-        } else if (err.status === 400) {
-          this.errorMessage = 'Datos inválidos. Verifica el formato del correo o la longitud de la contraseña.';
-        } else {
-          this.errorMessage = 'Error al conectar con el servidor. Inténtalo más tarde.';
-        }
+        this.errorMessage = obtenerMensajeError(
+          err,
+          'Error al conectar con el servidor. Inténtalo más tarde.'
+        );
       }
     });
   }

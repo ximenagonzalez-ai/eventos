@@ -1,43 +1,89 @@
-<div class="audit-container">
-  <h2>Registro de Auditoría del Sistema</h2>
-  <p class="subtitle">Monitoreo de actividades y eventos recientes de los usuarios.</p>
-
-  <div *ngIf="errorMessage" class="error-alert">
-    {{ errorMessage }}
+<section class="admin-page">
+  <div class="admin-header">
+    <div>
+      <h1>Panel Administrativo, Auditoría y Reportes</h1>
+      <p class="subtitulo">Consulta el historial de acciones y el resumen de ventas por evento.</p>
+    </div>
   </div>
 
-  <div *ngIf="isLoading" class="loading-spinner">
-    <p>Cargando registros de auditoría...</p>
+  <p *ngIf="error" class="msg-error">{{ error }}</p>
+
+  <!-- Reporte de ventas por evento -->
+  <div class="panel-card">
+    <div class="panel-top">
+      <h2>Ventas por Evento</h2>
+      <button type="button" class="btn-secondary" (click)="cargarReportes()">Actualizar</button>
+    </div>
+
+    <p *ngIf="cargandoReportes" class="msg-info">Cargando reportes...</p>
+    <p *ngIf="!cargandoReportes && reportes.length === 0" class="msg-vacio">
+      No hay datos de ventas registrados.
+    </p>
+
+    <div class="tabla-wrapper" *ngIf="!cargandoReportes && reportes.length > 0">
+      <table class="tabla-datos">
+        <thead>
+        <tr>
+          <th>Evento</th>
+          <th>Boletas Vendidas</th>
+          <th>Total Vendido</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let r of reportes">
+          <td>{{ r.evento }}</td>
+          <td>{{ r.boletasVendidas }}</td>
+          <td>{{ r.totalVendido | number:'1.0-0' }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div *ngIf="!isLoading && auditorias.length === 0" class="empty-state">
-    <p>No hay registros de auditoría disponibles.</p>
-  </div>
+  <!-- Auditoría por usuario (ADMIN) -->
+  <div class="panel-card" *ngIf="isAdmin">
+    <div class="panel-top">
+      <h2>Auditoría por Usuario</h2>
+      <div class="filtro-row">
+        <input
+          type="number"
+          min="1"
+          [(ngModel)]="usuarioIdFiltro"
+          name="usuarioIdFiltro"
+          placeholder="ID Usuario"
+        />
+        <button type="button" class="btn-primary" (click)="cargarAuditoria()">Buscar</button>
+      </div>
+    </div>
 
-  <div *ngIf="!isLoading && auditorias.length > 0" class="table-responsive">
-    <table class="audit-table">
-      <thead>
-      <tr>
-        <th>ID</th>
-        <th>Usuario ID</th>
-        <th>Acción</th>
-        <th>Detalles</th>
-        <th>Fecha y Hora</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let item of auditorias">
-        <td>{{ item.id }}</td>
-        <td>{{ item.usuarioId }}</td>
-        <td>
-            <span class="badge" [ngClass]="item.accion.toLowerCase()">
-              {{ item.accion }}
-            </span>
-        </td>
-        <td>{{ item.detalles || 'Sin detalles adicionales' }}</td>
-        <td>{{ item.fechaAccion | date:'medium' }}</td>
-      </tr>
-      </tbody>
-    </table>
+    <p *ngIf="cargandoAuditoria" class="msg-info">Cargando auditoría...</p>
+    <p *ngIf="!cargandoAuditoria && auditorias.length === 0" class="msg-vacio">
+      No hay registros de auditoría para este usuario.
+    </p>
+
+    <div class="tabla-wrapper" *ngIf="!cargandoAuditoria && auditorias.length > 0">
+      <table class="tabla-datos">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Acción</th>
+          <th>Entidad</th>
+          <th>ID Entidad</th>
+          <th>Detalle</th>
+          <th>Fecha</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let a of auditorias">
+          <td>{{ a.id }}</td>
+          <td>{{ a.accion }}</td>
+          <td>{{ a.entidad }}</td>
+          <td>{{ a.entidadId || '-' }}</td>
+          <td>{{ a.detalle || '-' }}</td>
+          <td>{{ a.fechaRegistro || '-' }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
+</section>

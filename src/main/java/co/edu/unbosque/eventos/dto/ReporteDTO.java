@@ -1,5 +1,4 @@
 package co.edu.unbosque.eventos.dto;
-
 import java.math.BigDecimal;
 
 public class ReporteDTO {

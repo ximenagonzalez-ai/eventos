@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unbosque.eventos.dto.AuditoriaDTO;
 import co.edu.unbosque.eventos.model.Auditoria;
 import co.edu.unbosque.eventos.service.AuditoriaService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/auditoria")

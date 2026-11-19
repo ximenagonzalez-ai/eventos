@@ -52,7 +52,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource(null)))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource("http://localhost:4200")))
             .csrf(csrf -> csrf.disable()) // Deshabilitado porque usamos JWT, no cookies de sesión
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sin sesiones en servidor
             .authorizeHttpRequests(auth -> auth
@@ -134,7 +134,7 @@ public class SecurityConfig {
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource(
-            @Value("${app.frontend-url:http://localhost:3000}") String frontendUrl) {
+            @Value("${app.frontend-url:http://localhost:4200}") String frontendUrl) {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(frontendUrl));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));

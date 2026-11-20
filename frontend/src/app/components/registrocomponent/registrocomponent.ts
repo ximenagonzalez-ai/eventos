@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/authservice';
 import { RegistroRequest } from '../../models/authmodel';
@@ -22,7 +22,11 @@ export class RegistroComponent {
   successMessage: string = '';
   isLoading: boolean = false;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   onRegister(): void {
     this.errorMessage = '';
@@ -57,6 +61,7 @@ export class RegistroComponent {
           rol: 'USER'
         };
         this.confirmPassword = '';
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
@@ -64,6 +69,7 @@ export class RegistroComponent {
           err,
           'Error al conectar con el servidor. Inténtalo más tarde.'
         );
+        this.cdr.detectChanges();
       }
     });
   }

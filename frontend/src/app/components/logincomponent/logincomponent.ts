@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/authservice';
 import { LoginRequest } from '../../models/authmodel';
@@ -19,7 +19,11 @@ export class LoginComponent {
   errorMessage: string = '';
   isLoading: boolean = false;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   onLogin(): void {
     this.errorMessage = '';
@@ -58,6 +62,7 @@ export class LoginComponent {
           localStorage.setItem('email', email);
         }
 
+        this.cdr.detectChanges();
         this.router.navigate(['/mis-boletas']);
       },
       error: (err) => {
@@ -66,6 +71,7 @@ export class LoginComponent {
           err,
           'Correo o contraseña incorrectos, o cuenta sin verificar.'
         );
+        this.cdr.detectChanges();
       }
     });
   }

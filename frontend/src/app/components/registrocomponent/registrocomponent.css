@@ -56,6 +56,13 @@
   color: var(--text-main, #ffffff);
 }
 
+.field-hint {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-muted, #9ca3af);
+  font-size: 0.75rem;
+}
+
 .form-group input,
 .select-input {
   width: 100%;

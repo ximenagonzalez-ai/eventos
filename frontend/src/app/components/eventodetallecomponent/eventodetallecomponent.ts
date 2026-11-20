@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { finalize, timeout } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { distinctUntilChanged, finalize, map, timeout } from 'rxjs';
 import { EventoService } from '../../services/eventoservice';
 import { Evento, TipoBoletaResumen } from '../../models/eventomodel';
 import { BoletaService } from '../../services/boletaservice';
@@ -29,13 +30,16 @@ export class EventoDetalleComponent implements OnInit {
     private eventoService: EventoService,
     private cdr: ChangeDetectorRef,
     private boletaService: BoletaService,
-    private router: Router
+    private router: Router,
+    private destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const id = Number(params.get('id'));
-
+    this.route.paramMap.pipe(
+      map((params) => Number(params.get('id'))),
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe((id) => {
       if (!id || id <= 0) {
         this.evento = null;
         this.error = 'El identificador del evento no es válido.';
@@ -58,22 +62,19 @@ export class EventoDetalleComponent implements OnInit {
         timeout(30000),
         finalize(() => {
           this.isLoading = false;
-          this.cdr.detectChanges();
-        })
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: (data) => {
           if (data) {
             this.evento = data;
-
-            console.log('Detalle del evento recibido:', data);
           } else {
             this.error = 'No se encontró el evento solicitado.';
           }
         },
         error: (err) => {
-          console.error('Error cargando detalle del evento:', err);
-
           this.error = obtenerMensajeError(
             err,
             'No se pudieron cargar los detalles del evento.'
@@ -122,8 +123,9 @@ export class EventoDetalleComponent implements OnInit {
         timeout(60000),
         finalize(() => {
           this.comprandoId = null;
-          this.cdr.detectChanges();
-        })
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: () => {

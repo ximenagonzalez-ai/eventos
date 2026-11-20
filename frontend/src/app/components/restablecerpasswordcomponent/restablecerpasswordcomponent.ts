@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize, timeout } from 'rxjs';
 import { AuthService } from '../../services/authservice';
 import { obtenerMensajeError } from '../../utils/errorhelper';
 
@@ -20,7 +22,9 @@ export class RestablecerPasswordComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private destroyRef: DestroyRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -44,10 +48,17 @@ export class RestablecerPasswordComponent implements OnInit {
     this.authService.restablecerPassword({
       token: this.token,
       nuevaContrasena: this.nuevaContrasena
-    }).subscribe({
+    }).pipe(
+      timeout(30_000),
+      finalize(() => {
+        this.isLoading = false;
+        if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (res) => {
         this.mensaje = res.mensaje || 'Contraseña restablecida correctamente.';
-        this.isLoading = false;
+        this.cdr.detectChanges();
         setTimeout(() => this.router.navigate(['/login']), 2500);
       },
       error: (err) => {
@@ -55,7 +66,7 @@ export class RestablecerPasswordComponent implements OnInit {
           err,
           'No se pudo restablecer la contraseña.'
         );
-        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }

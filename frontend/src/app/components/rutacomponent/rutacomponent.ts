@@ -1,7 +1,9 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize, timeout } from 'rxjs';
 import { EventoService } from '../../services/eventoservice';
 import { Evento } from '../../models/eventomodel';
 import { obtenerMensajeError } from '../../utils/errorhelper';
@@ -36,17 +38,25 @@ export class RutaComponent implements OnInit {
     private eventoService: EventoService,
     private http: HttpClient,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
       this.error = '';
-      this.eventoService.obtenerPorId(id).subscribe({
+      this.isLoading = true;
+      this.eventoService.obtenerPorId(id).pipe(
+        timeout(30_000),
+        finalize(() => {
+          this.isLoading = false;
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe({
         next: (data) => {
           this.evento = data;
-          this.isLoading = false;
           if (data.lugar?.latitud && data.lugar?.longitud) {
             this.mapaUrl = this.construirMapaUrl(data.lugar.latitud, data.lugar.longitud);
           }
@@ -54,8 +64,7 @@ export class RutaComponent implements OnInit {
         },
         error: (err) => {
           this.error = obtenerMensajeError(err, 'No se encontró el evento.');
-          this.isLoading = false;
-          this.cdr.detectChanges();
+          this.evento = null;
         }
       });
     } else {
@@ -122,10 +131,16 @@ export class RutaComponent implements OnInit {
     this.cdr.detectChanges();
 
     this.http.get<any>('http://localhost:8080/api/rutas', { params })
+      .pipe(
+        timeout(30_000),
+        finalize(() => {
+          this.calculandoRuta = false;
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
         next: (respuesta) => {
-          this.calculandoRuta = false;
-
           const pasos: any[] = respuesta.pasos || [];
           this.instrucciones = pasos.map(p =>
             p.calle ? `${p.instruccion} (${p.calle})` : p.instruccion
@@ -140,7 +155,6 @@ export class RutaComponent implements OnInit {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          this.calculandoRuta = false;
           this.errorRuta = obtenerMensajeError(
             err,
             'No se pudo calcular la ruta. Intenta de nuevo.'

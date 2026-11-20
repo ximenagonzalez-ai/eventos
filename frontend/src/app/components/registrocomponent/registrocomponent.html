@@ -42,7 +42,9 @@
           name="password"
           [(ngModel)]="userData.password"
           placeholder="••••••••"
+          maxlength="72"
           required>
+        <small class="field-hint">La contraseña debe tener entre 8 y 72 caracteres.</small>
       </div>
 
       <div class="form-group">

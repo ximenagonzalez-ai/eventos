@@ -73,6 +73,11 @@
   font-weight: bold;
 }
 
+.error-code {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
 .btn-primary {
   background-color: var(--accent-color);
   color: var(--text-main);

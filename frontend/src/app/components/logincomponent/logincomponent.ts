@@ -1,5 +1,7 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize, timeout } from 'rxjs';
 import { AuthService } from '../../services/authservice';
 import { LoginRequest } from '../../models/authmodel';
 import { obtenerMensajeError } from '../../utils/errorhelper';
@@ -22,7 +24,8 @@ export class LoginComponent {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private destroyRef: DestroyRef
   ) {}
 
   onLogin(): void {
@@ -40,10 +43,15 @@ export class LoginComponent {
 
     this.isLoading = true;
 
-    this.authService.login(request).subscribe({
-      next: (res: any) => {
+    this.authService.login(request).pipe(
+      timeout(30_000),
+      finalize(() => {
         this.isLoading = false;
-
+        if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (res: any) => {
         const token = res?.token || res?.jwt || res?.accessToken;
         const rol = res?.rol || res?.role || res?.usuario?.rol;
         const usuarioId = res?.id || res?.usuarioId || res?.usuario?.id;
@@ -66,7 +74,6 @@ export class LoginComponent {
         this.router.navigate(['/mis-boletas']);
       },
       error: (err) => {
-        this.isLoading = false;
         this.errorMessage = obtenerMensajeError(
           err,
           'Correo o contraseña incorrectos, o cuenta sin verificar.'

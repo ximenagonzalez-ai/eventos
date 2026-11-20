@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize, timeout } from 'rxjs';
 import { ItinerarioDTO } from '../../models/itinerariomodel';
 import { ItinerarioService } from '../../services/itinerarioservice';
 import { obtenerMensajeError } from '../../utils/errorhelper';
@@ -18,7 +20,11 @@ export class ItinerarioComponent implements OnInit {
   cargando = false;
   error = '';
 
-  constructor(private itinerarioService: ItinerarioService) {}
+  constructor(
+    private itinerarioService: ItinerarioService,
+    private destroyRef: DestroyRef,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.cargarItinerarios();
@@ -28,14 +34,20 @@ export class ItinerarioComponent implements OnInit {
     this.cargando = true;
     this.error = '';
 
-    this.itinerarioService.listarPorUsuario(this.usuarioId).subscribe({
+    this.itinerarioService.listarPorUsuario(this.usuarioId).pipe(
+      timeout(30_000),
+      finalize(() => {
+        this.cargando = false;
+        if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (data) => {
         this.itinerarios = data || [];
-        this.cargando = false;
       },
       error: (err) => {
         this.error = obtenerMensajeError(err, 'No se pudieron cargar los itinerarios.');
-        this.cargando = false;
+        this.itinerarios = [];
       }
     });
   }
@@ -48,13 +60,18 @@ export class ItinerarioComponent implements OnInit {
     }
 
     this.error = '';
-    this.itinerarioService.crear(this.usuarioId, nombre).subscribe({
+    this.itinerarioService.crear(this.usuarioId, nombre).pipe(
+      timeout(30_000),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (creado) => {
         this.itinerarios = [creado, ...this.itinerarios];
         this.nombreNuevoItinerario = '';
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = obtenerMensajeError(err, 'No se pudo crear el itinerario.');
+        this.cdr.detectChanges();
       }
     });
   }
@@ -67,15 +84,20 @@ export class ItinerarioComponent implements OnInit {
     }
 
     this.error = '';
-    this.itinerarioService.agregarEvento(itinerarioId, eventoId).subscribe({
+    this.itinerarioService.agregarEvento(itinerarioId, eventoId).pipe(
+      timeout(30_000),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (actualizado) => {
         this.itinerarios = this.itinerarios.map((item) =>
           item.id === itinerarioId ? actualizado : item
         );
         this.eventoIdPorItinerario[itinerarioId] = null;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = obtenerMensajeError(err, 'No se pudo agregar el evento al itinerario.');
+        this.cdr.detectChanges();
       }
     });
   }

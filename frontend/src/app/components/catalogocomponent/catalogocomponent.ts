@@ -1,6 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { finalize, timeout } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { distinctUntilChanged, finalize, map, switchMap, tap, timeout } from 'rxjs';
 import { EventoService } from '../../services/eventoservice';
 import { CategoriaService } from '../../services/categoriaservice';
 import { Evento } from '../../models/eventomodel';
@@ -24,12 +25,14 @@ export class CatalogoComponent implements OnInit {
   isLoading = false;
   mensaje = '';
   error = '';
+  errorCategorias = '';
 
   constructor(
     private route: ActivatedRoute,
     private eventoService: EventoService,
     private categoriaService: CategoriaService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private destroyRef: DestroyRef
   ) {}
 
   get isAdmin(): boolean {
@@ -43,24 +46,35 @@ export class CatalogoComponent implements OnInit {
 
   cargarCategoriasYConfigurarRuta(): void {
     this.categoriaService.obtenerTodas()
-      .pipe(timeout(30000))
+      .pipe(
+        timeout(30_000),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
         next: (cats) => {
           this.categorias = Array.isArray(cats) ? cats : [];
+          this.errorCategorias = '';
           this.cdr.detectChanges();
           this.escucharRuta();
         },
         error: (err) => {
-          console.error('Error cargando categorias:', err);
           this.categorias = [];
+          this.errorCategorias = obtenerMensajeError(
+            err,
+            'No se pudieron cargar las categorías.'
+          );
+          this.cdr.detectChanges();
           this.escucharRuta();
         }
       });
   }
 
   escucharRuta(): void {
-    this.route.url.subscribe(segments => {
-      const path = segments[0]?.path || '';
+    this.route.url.pipe(
+      map((segments) => segments[0]?.path || ''),
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe((path) => {
       const queryParam = this.route.snapshot.queryParamMap.get('q');
 
       if (queryParam) {
@@ -101,6 +115,7 @@ export class CatalogoComponent implements OnInit {
 
   cargarTodos(): void {
     this.isLoading = true;
+    this.mensaje = '';
     this.error = '';
 
     this.eventoService.obtenerTodos()
@@ -108,8 +123,9 @@ export class CatalogoComponent implements OnInit {
         timeout(30000),
         finalize(() => {
           this.isLoading = false;
-          this.cdr.detectChanges();
-        })
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: (data) => {
@@ -140,6 +156,7 @@ export class CatalogoComponent implements OnInit {
     if (cat) this.tituloSeccion = cat.nombre;
 
     this.isLoading = true;
+    this.mensaje = '';
     this.error = '';
 
     this.eventoService.obtenerPorCategoria(categoriaId)
@@ -147,8 +164,9 @@ export class CatalogoComponent implements OnInit {
         timeout(30000),
         finalize(() => {
           this.isLoading = false;
-          this.cdr.detectChanges();
-        })
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: (data) => {
@@ -171,6 +189,7 @@ export class CatalogoComponent implements OnInit {
     }
 
     this.isLoading = true;
+    this.mensaje = '';
     this.error = '';
 
     this.eventoService.obtenerPorCiudad(this.ciudadFiltro)
@@ -178,8 +197,9 @@ export class CatalogoComponent implements OnInit {
         timeout(30000),
         finalize(() => {
           this.isLoading = false;
-          this.cdr.detectChanges();
-        })
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: (data) => {
@@ -202,6 +222,7 @@ export class CatalogoComponent implements OnInit {
     }
 
     this.isLoading = true;
+    this.mensaje = '';
     this.error = '';
 
     this.eventoService.buscarPorNombre(this.busquedaTexto)
@@ -209,8 +230,9 @@ export class CatalogoComponent implements OnInit {
         timeout(30000),
         finalize(() => {
           this.isLoading = false;
-          this.cdr.detectChanges();
-        })
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: (data) => {
@@ -233,21 +255,26 @@ export class CatalogoComponent implements OnInit {
 
     this.eventoService.sincronizarTicketmaster()
       .pipe(
-        timeout(120000),
+        timeout(120_000),
+        tap((respuesta) => {
+          this.mensaje = respuesta;
+        }),
+        switchMap(() => this.eventoService.obtenerTodos().pipe(timeout(30_000))),
         finalize(() => {
           this.isLoading = false;
-          this.cdr.detectChanges();
-        })
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
-        next: (res) => {
-          this.mensaje = res;
-          this.cargarTodos();
+        next: (data) => {
+          this.eventos = Array.isArray(data) ? data : [];
         },
         error: (err) => {
+          this.mensaje = '';
           this.error = obtenerMensajeError(
             err,
-            'Error al sincronizar eventos desde Ticketmaster.'
+            'No se pudo sincronizar o actualizar los eventos.'
           );
         }
       });

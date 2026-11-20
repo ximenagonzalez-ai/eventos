@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -7,48 +8,57 @@ import { Evento, EstadoEvento } from '../models/eventomodel';
   providedIn: 'root'
 })
 export class EventoService {
+
   private apiUrl = 'http://localhost:8080/evento';
 
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token') || '';
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
+    const token = localStorage.getItem('token');
+
+    let headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
+
+    if (token && token !== 'null'
+      && token !== 'undefined'
+      && token.trim() !== '') {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return headers;
   }
 
   obtenerTodos(): Observable<Evento[]> {
-    return this.http.get<Evento[]>(`${this.apiUrl}/getall`, { headers: this.getHeaders() });
+    return this.http.get<Evento[]>(`${this.apiUrl}/getall`);
   }
 
   obtenerPorId(id: number): Observable<Evento> {
-    return this.http.get<Evento>(`${this.apiUrl}/getbyid/${id}`, { headers: this.getHeaders() });
+    return this.http.get<Evento>(`${this.apiUrl}/getbyid/${id}`);
   }
 
   obtenerPorCategoria(categoriaId: number): Observable<Evento[]> {
-    return this.http.get<Evento[]>(`${this.apiUrl}/bycategoria/${categoriaId}`, {
-      headers: this.getHeaders()
-    });
+    return this.http.get<Evento[]>(
+      `${this.apiUrl}/bycategoria/${categoriaId}`
+    );
   }
 
   obtenerPorEstado(estado: EstadoEvento): Observable<Evento[]> {
-    return this.http.get<Evento[]>(`${this.apiUrl}/byestado?estado=${estado}`, {
-      headers: this.getHeaders()
-    });
+    return this.http.get<Evento[]>(
+      `${this.apiUrl}/byestado?estado=${estado}`
+    );
   }
 
   obtenerPorCiudad(ciudad: string): Observable<Evento[]> {
-    return this.http.get<Evento[]>(`${this.apiUrl}/bycity?ciudad=${encodeURIComponent(ciudad)}`, {
-      headers: this.getHeaders()
-    });
+    return this.http.get<Evento[]>(
+      `${this.apiUrl}/bycity?ciudad=${encodeURIComponent(ciudad)}`
+    );
   }
 
   buscarPorNombre(nombre: string): Observable<Evento[]> {
-    return this.http.get<Evento[]>(`${this.apiUrl}/search?nombre=${encodeURIComponent(nombre)}`, {
-      headers: this.getHeaders()
-    });
+    return this.http.get<Evento[]>(
+      `${this.apiUrl}/search?nombre=${encodeURIComponent(nombre)}`
+    );
   }
 
   crear(evento: Evento): Observable<string> {

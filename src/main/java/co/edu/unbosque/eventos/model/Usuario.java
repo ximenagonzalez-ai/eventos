@@ -92,16 +92,20 @@ public class Usuario implements UserDetails {
     @Override
     public boolean isAccountNonExpired() { return true; }
 
-    /** La cuenta se bloquea si el admin pone activo = false. */
+    /**
+     * Siempre true a proposito: el estado (bloqueada / sin verificar) lo revisa AuthService.login
+     * DESPUES de validar la contrasena. Si Spring lo revisara antes, el login devolveria
+     * CREDENCIALES_INVALIDAS para cuentas sin verificar y se filtraria el estado de la cuenta.
+     */
     @Override
-    public boolean isAccountNonLocked() { return activo; }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
     public boolean isCredentialsNonExpired() { return true; }
 
-    /** Solo puede loguear si está activo Y confirmó su email. */
+    /** Siempre true a proposito (ver isAccountNonLocked). AuthService.login revisa activo y emailVerificado. */
     @Override
-    public boolean isEnabled() { return activo && emailVerificado; }
+    public boolean isEnabled() { return true; }
 
     // ---- Getters y Setters ----
 

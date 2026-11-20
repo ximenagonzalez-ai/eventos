@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { finalize, timeout } from 'rxjs';
 import { EventoService } from '../../services/eventoservice';
 import { Evento } from '../../models/eventomodel';
 import { obtenerMensajeError } from '../../utils/errorhelper';
@@ -11,40 +12,94 @@ import { obtenerMensajeError } from '../../utils/errorhelper';
   standalone: false
 })
 export class EventoDetalleComponent implements OnInit {
+
   evento: Evento | null = null;
   isLoading: boolean = true;
   error: string = '';
 
   constructor(
     private route: ActivatedRoute,
-    private eventoService: EventoService
+    private eventoService: EventoService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    if (id) {
-      this.eventoService.obtenerPorId(id).subscribe({
-        next: (data) => {
-          this.evento = data;
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
+
+      if (!id || id <= 0) {
+        this.evento = null;
+        this.error = 'El identificador del evento no es válido.';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        return;
+      }
+
+      this.cargarEvento(id);
+    });
+  }
+
+  cargarEvento(id: number): void {
+    this.isLoading = true;
+    this.error = '';
+    this.evento = null;
+
+    this.eventoService.obtenerPorId(id)
+      .pipe(
+        timeout(30000),
+        finalize(() => {
           this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          if (data) {
+            this.evento = data;
+
+            console.log('Detalle del evento recibido:', data);
+          } else {
+            this.error = 'No se encontró el evento solicitado.';
+          }
         },
         error: (err) => {
-          this.error = obtenerMensajeError(err, 'No se encontró el evento solicitado.');
-          this.isLoading = false;
+          console.error('Error cargando detalle del evento:', err);
+
+          this.error = obtenerMensajeError(
+            err,
+            'No se pudieron cargar los detalles del evento.'
+          );
         }
       });
-    } else {
-      this.error = 'El identificador del evento no es válido.';
-      this.isLoading = false;
-    }
   }
 
   abrirMapa(): void {
-    if (!this.evento?.lugar) return;
-    const { latitud, longitud, direccion, ciudad } = this.evento.lugar;
-    const url = (latitud && longitud)
-      ? `https://www.google.com/maps/search/?api=1&query=${latitud},${longitud}`
-      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion + ', ' + ciudad)}`;
-    window.open(url, '_blank');
+    if (!this.evento || !this.evento.lugar) {
+      return;
+    }
+
+    const lugar = this.evento.lugar;
+
+    let busqueda = '';
+
+    if (
+      lugar.latitud != null &&
+      lugar.longitud != null &&
+      (lugar.latitud !== 0 || lugar.longitud !== 0)
+    ) {
+      busqueda = `${lugar.latitud},${lugar.longitud}`;
+    } else {
+      busqueda = [
+        lugar.nombre,
+        lugar.direccion,
+        lugar.ciudad
+      ].filter(Boolean).join(', ');
+    }
+
+    const url =
+      'https://www.google.com/maps/search/?api=1&query=' +
+      encodeURIComponent(busqueda);
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }

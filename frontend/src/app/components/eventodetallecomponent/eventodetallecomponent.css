@@ -133,3 +133,58 @@
   font-weight: 700;
   color: #a78bfa;
 }
+
+/* ---- Compra de boletas ---- */
+.ticket-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.compra-controles {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-cant {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.cant-valor {
+  min-width: 20px;
+  text-align: center;
+  font-size: 1rem !important;
+  color: #fff !important;
+}
+
+.btn-comprar {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #8b5cf6;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-comprar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.agotado {
+  color: #f87171;
+}
+
+.msg-ok {
+  margin-top: 12px;
+  color: #34d399;
+}

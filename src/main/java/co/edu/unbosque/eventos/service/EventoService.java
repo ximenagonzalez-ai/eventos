@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unbosque.eventos.dto.EventoDTO;
 import co.edu.unbosque.eventos.dto.LugarDTO;
@@ -64,6 +65,7 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @return 0 exito, 1 categoria no encontrada, 2 lugar no encontrado
      */
     @Override
+    @Transactional
     public int create(EventoDTO data) {
         Optional<Categoria> catFound = categoriaRepo.findById(data.getCategoriaId());
         if (catFound.isEmpty()) return 1;
@@ -92,8 +94,9 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @return Lista completa de EventoDTO
      */
     @Override
+    @Transactional(readOnly = true)
     public List<EventoDTO> getAll() {
-        List<Evento> lista = eventoRepo.findAll();
+        List<Evento> lista = eventoRepo.findAllBy();
         return mapearLista(lista);
     }
 
@@ -104,6 +107,7 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @return 0 exito, 1 si no existe
      */
     @Override
+    @Transactional
     public int deleteById(Long id) {
         if (!eventoRepo.existsById(id)) return 1;
         eventoRepo.deleteById(id);
@@ -118,6 +122,7 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @return 0 exito, 1 categoria no encontrada, 2 lugar no encontrado, 3 evento no existe
      */
     @Override
+    @Transactional
     public int updateById(Long id, EventoDTO newData) {
         Optional<Evento> found = eventoRepo.findById(id);
         if (found.isEmpty()) return 3;
@@ -155,8 +160,9 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @param id ID del evento
      * @return EventoDTO completo o null si no existe
      */
+    @Transactional(readOnly = true)
     public EventoDTO getById(Long id) {
-        Optional<Evento> found = eventoRepo.findById(id);
+        Optional<Evento> found = eventoRepo.findDetalleById(id);
         return found.map(this::mapearEvento).orElse(null);
     }
 
@@ -167,6 +173,7 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @param categoriaId ID de la categoria
      * @return Lista de eventos de esa categoria
      */
+    @Transactional(readOnly = true)
     public List<EventoDTO> getByCategoria(Long categoriaId) {
         return mapearLista(eventoRepo.findByCategoriaId(categoriaId));
     }
@@ -177,6 +184,7 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @param estado Estado a filtrar
      * @return Lista de eventos con ese estado
      */
+    @Transactional(readOnly = true)
     public List<EventoDTO> getByEstado(EstadoEvento estado) {
         return mapearLista(eventoRepo.findByEstado(estado));
     }
@@ -189,6 +197,7 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @param estado      Estado del evento
      * @return Lista de eventos que cumplen ambos filtros
      */
+    @Transactional(readOnly = true)
     public List<EventoDTO> getByCategoriaYEstado(Long categoriaId, EstadoEvento estado) {
         return mapearLista(eventoRepo.findByCategoriaIdAndEstado(categoriaId, estado));
     }
@@ -200,6 +209,7 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @param ciudad Ciudad a buscar
      * @return Lista de eventos en esa ciudad
      */
+    @Transactional(readOnly = true)
     public List<EventoDTO> getByCiudad(String ciudad) {
         return mapearLista(eventoRepo.findByLugarCiudadIgnoreCase(ciudad));
     }
@@ -210,6 +220,7 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @param nombre Texto a buscar
      * @return Lista de eventos que coincidan
      */
+    @Transactional(readOnly = true)
     public List<EventoDTO> buscarPorNombre(String nombre) {
         return mapearLista(eventoRepo.findByNombreContainingIgnoreCase(nombre));
     }
@@ -221,6 +232,7 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @param fin    Fecha fin del rango
      * @return Lista de eventos en ese rango
      */
+    @Transactional(readOnly = true)
     public List<EventoDTO> getByRangoFechas(LocalDateTime inicio, LocalDateTime fin) {
         return mapearLista(eventoRepo.findByFechaInicioBetween(inicio, fin));
     }
@@ -243,6 +255,7 @@ public class EventoService implements CRUDOperation<EventoDTO> {
      * @param eventosExternos Lista de EventoDTO provenientes de la API externa
      * @return Numero de eventos nuevos que se guardaron
      */
+    @Transactional
     public int sincronizarDesdeApiExterna(List<EventoDTO> eventosExternos) {
         int nuevos = 0;
 

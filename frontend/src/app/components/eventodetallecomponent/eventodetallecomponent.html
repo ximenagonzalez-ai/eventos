@@ -1,4 +1,3 @@
-
 <div class="detalle-container">
 
   <a routerLink="/eventos" class="back-link">
@@ -112,9 +111,27 @@
             <span>
               ${{ tb.precio | number }}
             </span>
+
+            <div class="compra-controles" *ngIf="tb.id != null && (tb.cantidadDisponible == null || tb.cantidadDisponible > 0)">
+              <button type="button" class="btn-cant" (click)="cambiarCantidad(tb, -1)">−</button>
+              <span class="cant-valor">{{ cantidadDe(tb) }}</span>
+              <button type="button" class="btn-cant" (click)="cambiarCantidad(tb, 1)">+</button>
+              <button
+                type="button"
+                class="btn-comprar"
+                [disabled]="comprandoId !== null"
+                (click)="comprar(tb)">
+                {{ comprandoId === tb.id ? 'Comprando...' : 'Comprar' }}
+              </button>
+            </div>
+
+            <small class="agotado" *ngIf="tb.cantidadDisponible === 0">Agotado</small>
           </div>
 
         </div>
+
+        <p *ngIf="errorCompra" class="alert-error">{{ errorCompra }}</p>
+        <p *ngIf="mensajeCompra" class="msg-ok">{{ mensajeCompra }}</p>
       </div>
 
     </div>

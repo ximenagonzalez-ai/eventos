@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { finalize, timeout } from 'rxjs';
 import { EventoService } from '../../services/eventoservice';
 import { CategoriaService } from '../../services/categoriaservice';
 import { Evento } from '../../models/eventomodel';
@@ -13,24 +14,27 @@ import { obtenerMensajeError } from '../../utils/errorhelper';
   standalone: false
 })
 export class CatalogoComponent implements OnInit {
+
   eventos: Evento[] = [];
   categorias: Categoria[] = [];
-  tituloSeccion: string = 'Todos los Eventos';
+  tituloSeccion = 'Todos los Eventos';
   categoriaSeleccionadaId: number | null = null;
-  ciudadFiltro: string = '';
-  busquedaTexto: string = '';
-  isLoading: boolean = false;
-  mensaje: string = '';
-  error: string = '';
+  ciudadFiltro = '';
+  busquedaTexto = '';
+  isLoading = false;
+  mensaje = '';
+  error = '';
 
   constructor(
     private route: ActivatedRoute,
     private eventoService: EventoService,
-    private categoriaService: CategoriaService
+    private categoriaService: CategoriaService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   get isAdmin(): boolean {
-    return localStorage.getItem('role') === 'ADMIN' || localStorage.getItem('rol') === 'ADMIN';
+    return localStorage.getItem('role') === 'ADMIN'
+      || localStorage.getItem('rol') === 'ADMIN';
   }
 
   ngOnInit(): void {
@@ -38,16 +42,20 @@ export class CatalogoComponent implements OnInit {
   }
 
   cargarCategoriasYConfigurarRuta(): void {
-    this.categoriaService.obtenerTodas().subscribe({
-      next: (cats) => {
-        this.categorias = cats || [];
-        this.escucharRuta();
-      },
-      error: (err) => {
-        this.error = obtenerMensajeError(err, 'No se pudieron cargar las categorías.');
-        this.escucharRuta();
-      }
-    });
+    this.categoriaService.obtenerTodas()
+      .pipe(timeout(30000))
+      .subscribe({
+        next: (cats) => {
+          this.categorias = Array.isArray(cats) ? cats : [];
+          this.cdr.detectChanges();
+          this.escucharRuta();
+        },
+        error: (err) => {
+          console.error('Error cargando categorias:', err);
+          this.categorias = [];
+          this.escucharRuta();
+        }
+      });
   }
 
   escucharRuta(): void {
@@ -78,13 +86,15 @@ export class CatalogoComponent implements OnInit {
 
   filtrarPorNombreCategoria(clave: string, titulo: string): void {
     this.tituloSeccion = titulo;
+
     const cat = this.categorias.find(c =>
-      c.nombre.toLowerCase().includes(clave.toLowerCase())
+      (c.nombre || '').toLowerCase().includes(clave.toLowerCase())
     );
-    if (cat && cat.id) {
-      this.categoriaSeleccionadaId = cat.id;
+
+    if (cat && cat.id != null) {
       this.filtrarPorCategoria(cat.id);
     } else {
+      this.categoriaSeleccionadaId = null;
       this.cargarTodos();
     }
   }
@@ -92,24 +102,35 @@ export class CatalogoComponent implements OnInit {
   cargarTodos(): void {
     this.isLoading = true;
     this.error = '';
-    this.eventoService.obtenerTodos().subscribe({
-      next: (data) => {
-        this.eventos = data || [];
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.error = obtenerMensajeError(
-          err,
-          'No se pudieron cargar los eventos. Verifica que tengas sesión iniciada.'
-        );
-        this.isLoading = false;
-      }
-    });
+
+    this.eventoService.obtenerTodos()
+      .pipe(
+        timeout(30000),
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.eventos = Array.isArray(data) ? data : [];
+          console.log('Eventos recibidos:', this.eventos.length);
+        },
+        error: (err) => {
+          this.eventos = [];
+          console.error('Error obteniendo eventos:', err);
+          this.error = obtenerMensajeError(
+            err,
+            'No se pudieron cargar los eventos.'
+          );
+        }
+      });
   }
 
   filtrarPorCategoria(categoriaId: number | null): void {
     this.categoriaSeleccionadaId = categoriaId;
-    if (!categoriaId) {
+
+    if (categoriaId == null) {
       this.tituloSeccion = 'Explora Eventos en Vivo';
       this.cargarTodos();
       return;
@@ -120,17 +141,27 @@ export class CatalogoComponent implements OnInit {
 
     this.isLoading = true;
     this.error = '';
-    this.eventoService.obtenerPorCategoria(categoriaId).subscribe({
-      next: (data) => {
-        this.eventos = data || [];
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.eventos = [];
-        this.error = obtenerMensajeError(err, 'No se pudieron filtrar los eventos por categoría.');
-        this.isLoading = false;
-      }
-    });
+
+    this.eventoService.obtenerPorCategoria(categoriaId)
+      .pipe(
+        timeout(30000),
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.eventos = Array.isArray(data) ? data : [];
+        },
+        error: (err) => {
+          this.eventos = [];
+          this.error = obtenerMensajeError(
+            err,
+            'No se pudieron filtrar los eventos.'
+          );
+        }
+      });
   }
 
   filtrarPorCiudad(): void {
@@ -138,19 +169,30 @@ export class CatalogoComponent implements OnInit {
       this.cargarTodos();
       return;
     }
+
     this.isLoading = true;
     this.error = '';
-    this.eventoService.obtenerPorCiudad(this.ciudadFiltro).subscribe({
-      next: (data) => {
-        this.eventos = data || [];
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.eventos = [];
-        this.error = obtenerMensajeError(err, 'No se pudieron filtrar los eventos por ciudad.');
-        this.isLoading = false;
-      }
-    });
+
+    this.eventoService.obtenerPorCiudad(this.ciudadFiltro)
+      .pipe(
+        timeout(30000),
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.eventos = Array.isArray(data) ? data : [];
+        },
+        error: (err) => {
+          this.eventos = [];
+          this.error = obtenerMensajeError(
+            err,
+            'No se pudieron filtrar los eventos por ciudad.'
+          );
+        }
+      });
   }
 
   buscarPorNombre(): void {
@@ -158,34 +200,56 @@ export class CatalogoComponent implements OnInit {
       this.cargarTodos();
       return;
     }
+
     this.isLoading = true;
     this.error = '';
-    this.eventoService.buscarPorNombre(this.busquedaTexto).subscribe({
-      next: (data) => {
-        this.eventos = data || [];
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.eventos = [];
-        this.error = obtenerMensajeError(err, 'No se pudo realizar la búsqueda de eventos.');
-        this.isLoading = false;
-      }
-    });
+
+    this.eventoService.buscarPorNombre(this.busquedaTexto)
+      .pipe(
+        timeout(30000),
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (data) => {
+          this.eventos = Array.isArray(data) ? data : [];
+        },
+        error: (err) => {
+          this.eventos = [];
+          this.error = obtenerMensajeError(
+            err,
+            'No se pudo realizar la busqueda.'
+          );
+        }
+      });
   }
 
   sincronizarTicketmaster(): void {
     this.isLoading = true;
     this.mensaje = '';
     this.error = '';
-    this.eventoService.sincronizarTicketmaster().subscribe({
-      next: (res) => {
-        this.mensaje = res;
-        this.cargarTodos();
-      },
-      error: (err) => {
-        this.error = obtenerMensajeError(err, 'Error al sincronizar eventos desde Ticketmaster.');
-        this.isLoading = false;
-      }
-    });
+
+    this.eventoService.sincronizarTicketmaster()
+      .pipe(
+        timeout(120000),
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.mensaje = res;
+          this.cargarTodos();
+        },
+        error: (err) => {
+          this.error = obtenerMensajeError(
+            err,
+            'Error al sincronizar eventos desde Ticketmaster.'
+          );
+        }
+      });
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Boleta, CompraDTO } from '../../models/boletamodel';
 import { BoletaService } from '../../services/boletaservice';
 import { obtenerMensajeError } from '../../utils/errorhelper';
@@ -10,7 +10,7 @@ import { obtenerMensajeError } from '../../utils/errorhelper';
   styleUrls: ['./miboletacomponent.css']
 })
 export class MiBoletaComponent implements OnInit {
-  usuarioId = 1;
+  usuarioId = Number(localStorage.getItem('usuarioId')) || 0;
   esAdmin = false;
   mostrarModal = false;
 
@@ -27,7 +27,10 @@ export class MiBoletaComponent implements OnInit {
   cargando = false;
   error = '';
 
-  constructor(private boletaService: BoletaService) {}
+  constructor(
+    private boletaService: BoletaService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.cargarCompras();
@@ -68,6 +71,11 @@ export class MiBoletaComponent implements OnInit {
   }
 
   cargarCompras(): void {
+    if (!this.usuarioId) {
+      this.error = 'Inicia sesión para ver tus boletas.';
+      return;
+    }
+
     this.cargando = true;
     this.error = '';
 
@@ -79,10 +87,12 @@ export class MiBoletaComponent implements OnInit {
         this.cargando = false;
 
         compras.forEach((c) => this.cargarBoletas(c.id, c.estado));
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = obtenerMensajeError(err, 'No se pudieron cargar tus compras.');
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -92,10 +102,12 @@ export class MiBoletaComponent implements OnInit {
       next: (boletas) => {
         this.boletasPorCompra[compraId] = boletas;
         this.boletas = [...this.boletas, ...boletas];
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.boletasPorCompra[compraId] = [];
         this.error = obtenerMensajeError(err, 'No se pudieron cargar algunas boletas.');
+        this.cdr.detectChanges();
       }
     });
   }

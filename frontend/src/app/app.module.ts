@@ -2,7 +2,7 @@ import { NgModule, provideZoneChangeDetection } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
@@ -22,6 +22,7 @@ import { EventoDetalleComponent } from './components/eventodetallecomponent/even
 import { RutaComponent } from './components/rutacomponent/rutacomponent';
 import { AyudaComponent } from './components/ayudacomponent/ayudacomponent';
 import { routes } from './app.routes';
+import { AuthInterceptor } from './interceptors/authinterceptor';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,10 @@ import { routes } from './app.routes';
     HttpClientModule,
     RouterModule.forRoot(routes),
   ],
-  providers: [provideZoneChangeDetection()],
+  providers: [
+    provideZoneChangeDetection(),
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

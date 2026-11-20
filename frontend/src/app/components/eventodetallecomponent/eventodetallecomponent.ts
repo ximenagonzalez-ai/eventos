@@ -1,5 +1,4 @@
-
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
 import { EventoService } from '../../services/eventoservice';
@@ -20,7 +19,8 @@ export class EventoDetalleComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private eventoService: EventoService
+    private eventoService: EventoService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -31,6 +31,7 @@ export class EventoDetalleComponent implements OnInit {
         this.evento = null;
         this.error = 'El identificador del evento no es válido.';
         this.isLoading = false;
+        this.cdr.detectChanges();
         return;
       }
 
@@ -48,6 +49,7 @@ export class EventoDetalleComponent implements OnInit {
         timeout(30000),
         finalize(() => {
           this.isLoading = false;
+          this.cdr.detectChanges();
         })
       )
       .subscribe({

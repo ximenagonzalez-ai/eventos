@@ -1,5 +1,4 @@
-
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
 import { EventoService } from '../../services/eventoservice';
@@ -29,7 +28,8 @@ export class CatalogoComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private eventoService: EventoService,
-    private categoriaService: CategoriaService
+    private categoriaService: CategoriaService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   get isAdmin(): boolean {
@@ -47,6 +47,7 @@ export class CatalogoComponent implements OnInit {
       .subscribe({
         next: (cats) => {
           this.categorias = Array.isArray(cats) ? cats : [];
+          this.cdr.detectChanges();
           this.escucharRuta();
         },
         error: (err) => {
@@ -105,7 +106,10 @@ export class CatalogoComponent implements OnInit {
     this.eventoService.obtenerTodos()
       .pipe(
         timeout(30000),
-        finalize(() => this.isLoading = false)
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
       )
       .subscribe({
         next: (data) => {
@@ -141,7 +145,10 @@ export class CatalogoComponent implements OnInit {
     this.eventoService.obtenerPorCategoria(categoriaId)
       .pipe(
         timeout(30000),
-        finalize(() => this.isLoading = false)
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
       )
       .subscribe({
         next: (data) => {
@@ -169,7 +176,10 @@ export class CatalogoComponent implements OnInit {
     this.eventoService.obtenerPorCiudad(this.ciudadFiltro)
       .pipe(
         timeout(30000),
-        finalize(() => this.isLoading = false)
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
       )
       .subscribe({
         next: (data) => {
@@ -197,7 +207,10 @@ export class CatalogoComponent implements OnInit {
     this.eventoService.buscarPorNombre(this.busquedaTexto)
       .pipe(
         timeout(30000),
-        finalize(() => this.isLoading = false)
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
       )
       .subscribe({
         next: (data) => {
@@ -221,7 +234,10 @@ export class CatalogoComponent implements OnInit {
     this.eventoService.sincronizarTicketmaster()
       .pipe(
         timeout(120000),
-        finalize(() => this.isLoading = false)
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
       )
       .subscribe({
         next: (res) => {

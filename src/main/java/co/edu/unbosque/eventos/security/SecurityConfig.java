@@ -52,7 +52,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource("http://localhost:4200")))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource(null)))
             .csrf(csrf -> csrf.disable()) // Deshabilitado porque usamos JWT, no cookies de sesión
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sin sesiones en servidor
             .authorizeHttpRequests(auth -> auth
@@ -91,8 +91,17 @@ public class SecurityConfig {
                     .hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/user/**").hasRole("ADMIN")
 
-                // ---- Auditoría: solo ADMIN (historial de acciones) ----
-                .requestMatchers("/auditoria/**").hasRole("ADMIN")
+                // ---- Auditoría: accesible para todos los usuarios autenticados ----
+                .requestMatchers("/auditoria/**").hasAnyRole("USER", "ADMIN")
+
+                // ---- Boletas, compras, itinerarios: USER y ADMIN ----
+                .requestMatchers("/api/boletas/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/compras/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/itinerarios/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/api/rutas/**").hasAnyRole("USER", "ADMIN")
+
+                // ---- Reportes: solo ADMIN ----
+                .requestMatchers("/api/reportes/**").hasRole("ADMIN")
 
                 // ---- Todo lo demás requiere estar autenticado ----
                 .anyRequest().authenticated()

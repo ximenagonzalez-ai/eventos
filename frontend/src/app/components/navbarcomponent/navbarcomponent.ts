@@ -8,6 +8,7 @@ import { ThemeService } from '../../services/themeservice';
   styleUrls: ['./navbarcomponent.css'],
   standalone: false
 })
+  
 export class NavbarComponent {
   searchQuery: string = '';
   isDropdownOpen: boolean = false;

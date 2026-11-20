@@ -1,4 +1,4 @@
-package co.edu.unbosque.eventos.dto;
+ package co.edu.unbosque.eventos.dto;
 
 import java.util.List;
 

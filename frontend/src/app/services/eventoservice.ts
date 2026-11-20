@@ -12,11 +12,16 @@ export class EventoService {
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token') || '';
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
+    const token = localStorage.getItem('token');
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json'
-    });
+    };
+
+    if (token && token !== 'null' && token !== 'undefined' && token.trim() !== '') {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return new HttpHeaders(headers);
   }
 
   obtenerTodos(): Observable<Evento[]> {

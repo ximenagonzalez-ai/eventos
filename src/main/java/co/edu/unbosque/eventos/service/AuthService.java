@@ -123,7 +123,7 @@ public class AuthService {
  
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String token = jwtUtil.generateToken(userDetails);
-        return ResultadoLogin.exitoso(token, usuario.getRol().name());
+        return ResultadoLogin.exitoso(token, usuario.getRol().name(), usuario.getId());
     }
  
     // ===================== VERIFICACIÓN DE CORREO =====================

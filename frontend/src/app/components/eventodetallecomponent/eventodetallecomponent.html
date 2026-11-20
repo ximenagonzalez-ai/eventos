@@ -1,56 +1,146 @@
 <div class="detalle-container">
-  <a routerLink="/eventos" class="back-link">← Volver al catálogo</a>
 
-  <div *ngIf="isLoading" class="loading-state">Cargando detalles del evento...</div>
-  <p *ngIf="error" class="alert-error">{{ error }}</p>
+  <a routerLink="/eventos" class="back-link">
+    ← Volver al catálogo
+  </a>
+
+  <div *ngIf="isLoading" class="loading-state">
+    Cargando detalles del evento...
+  </div>
+
+  <p *ngIf="error && !isLoading" class="alert-error">
+    {{ error }}
+  </p>
 
   <div *ngIf="evento && !isLoading" class="detalle-card">
+
     <div class="detalle-hero">
+
       <img
         [src]="evento.imagenUrl || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=1200&q=80'"
         [alt]="evento.nombre">
+
       <div class="hero-overlay">
-        <span class="badge-cat">{{ evento.categoriaNombre }}</span>
+
+        <span class="badge-cat">
+          {{ evento.categoriaNombre || 'Evento' }}
+        </span>
+
         <h1>{{ evento.nombre }}</h1>
-        <p class="hero-date">🗓️ {{ evento.fechaInicio | date:'fullDate' }} • {{ evento.fechaInicio | date:'h:mm a' }}</p>
+
+        <p class="hero-date">
+          🗓️ {{ evento.fechaInicio | date:'fullDate' }}
+          •
+          {{ evento.fechaInicio | date:'h:mm a' }}
+        </p>
+
       </div>
     </div>
 
     <div class="detalle-grid">
+
       <div class="detalle-info">
+
         <h2>Acerca del Evento</h2>
-        <p class="descripcion">{{ evento.descripcion }}</p>
+
+        <p class="descripcion">
+          {{ evento.descripcion || 'Sin descripción disponible.' }}
+        </p>
 
         <div class="lugar-box" *ngIf="evento.lugar">
+
           <h3>📍 Ubicación</h3>
-          <p><strong>{{ evento.lugar.nombre }}</strong></p>
-          <p>{{ evento.lugar.direccion }} — {{ evento.lugar.ciudad }}</p>
+
+          <p>
+            <strong>{{ evento.lugar.nombre }}</strong>
+          </p>
+
+          <p>
+            {{ evento.lugar.direccion }}
+            —
+            {{ evento.lugar.ciudad }}
+          </p>
+
           <div class="acciones-ubicacion">
-            <a *ngIf="evento.id" [routerLink]="['/evento', evento.id, 'ruta']" class="btn-ruta">
+
+            <a
+              *ngIf="evento.id"
+              [routerLink]="['/evento', evento.id, 'ruta']"
+              class="btn-ruta">
               🧭 Ver ruta paso a paso
             </a>
-            <button (click)="abrirMapa()" class="btn-mapa">Cómo llegar (Google Maps)</button>
+
+            <button
+              type="button"
+              (click)="abrirMapa()"
+              class="btn-mapa">
+              Cómo llegar (Google Maps)
+            </button>
+
           </div>
         </div>
       </div>
 
       <div class="boletas-box">
+
         <h2>Entradas Disponibles</h2>
-        <div *ngIf="!evento.tiposBoleta || evento.tiposBoleta.length === 0" class="sin-boletas">
+
+        <div
+          *ngIf="!evento.tiposBoleta || evento.tiposBoleta.length === 0"
+          class="sin-boletas">
           Aún no hay localidades habilitadas para este evento.
         </div>
 
-        <div class="ticket-tier" *ngFor="let tb of evento.tiposBoleta">
+        <div
+          class="ticket-tier"
+          *ngFor="let tb of evento.tiposBoleta || []">
+
           <div>
             <h4>{{ tb.nombre }}</h4>
-            <p>{{ tb.descripcion || 'Acceso general' }}</p>
-            <small *ngIf="tb.cantidadDisponible !== undefined">Disponibles: {{ tb.cantidadDisponible }}</small>
+
+            <p>
+              {{ tb.descripcion || 'Acceso general' }}
+            </p>
+
+            <small *ngIf="tb.cantidadDisponible != null">
+              Disponibles: {{ tb.cantidadDisponible }}
+            </small>
           </div>
+
           <div class="ticket-price">
-            <span>${{ tb.precio | number }}</span>
+            <span>
+              ${{ tb.precio | number }}
+            </span>
+
+            <div class="compra-controles" *ngIf="tb.id != null && (tb.cantidadDisponible == null || tb.cantidadDisponible > 0)">
+              <button type="button" class="btn-cant" (click)="cambiarCantidad(tb, -1)">−</button>
+              <span class="cant-valor">{{ cantidadDe(tb) }}</span>
+              <button type="button" class="btn-cant" (click)="cambiarCantidad(tb, 1)">+</button>
+              <button
+                type="button"
+                class="btn-comprar"
+                [disabled]="comprandoId !== null"
+                (click)="comprar(tb)">
+                {{ comprandoId === tb.id ? 'Comprando...' : 'Comprar' }}
+              </button>
+            </div>
+
+            <small class="agotado" *ngIf="tb.cantidadDisponible === 0">Agotado</small>
           </div>
+
         </div>
+
+        <p *ngIf="errorCompra" class="alert-error">{{ errorCompra }}</p>
+        <p *ngIf="mensajeCompra" class="msg-ok">{{ mensajeCompra }}</p>
       </div>
+
     </div>
   </div>
+
+  <div
+    *ngIf="!isLoading && !evento && !error"
+    class="empty-state">
+    No se encontró información del evento.
+  </div>
+
 </div>

@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, timeout } from 'rxjs';
 import { EventoService } from '../../services/eventoservice';
-import { Evento } from '../../models/eventomodel';
+import { Evento, TipoBoletaResumen } from '../../models/eventomodel';
+import { BoletaService } from '../../services/boletaservice';
 import { obtenerMensajeError } from '../../utils/errorhelper';
 
 @Component({
@@ -17,10 +18,18 @@ export class EventoDetalleComponent implements OnInit {
   isLoading: boolean = true;
   error: string = '';
 
+  // Compra de boletas
+  cantidades: { [tipoId: number]: number } = {};
+  comprandoId: number | null = null;
+  errorCompra: string = '';
+  mensajeCompra: string = '';
+
   constructor(
     private route: ActivatedRoute,
     private eventoService: EventoService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private boletaService: BoletaService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -69,6 +78,68 @@ export class EventoDetalleComponent implements OnInit {
             err,
             'No se pudieron cargar los detalles del evento.'
           );
+        }
+      });
+  }
+
+  cantidadDe(tb: TipoBoletaResumen): number {
+    return (tb.id != null && this.cantidades[tb.id]) || 1;
+  }
+
+  cambiarCantidad(tb: TipoBoletaResumen, delta: number): void {
+    if (tb.id == null) return;
+    const max = tb.cantidadDisponible ?? 10;
+    const nueva = this.cantidadDe(tb) + delta;
+    this.cantidades[tb.id] = Math.min(Math.max(nueva, 1), Math.min(max, 10));
+  }
+
+  comprar(tb: TipoBoletaResumen): void {
+    this.errorCompra = '';
+    this.mensajeCompra = '';
+
+    const token = localStorage.getItem('token');
+    const usuarioId = Number(localStorage.getItem('usuarioId'));
+
+    if (!token || !usuarioId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    if (tb.id == null) {
+      this.errorCompra = 'Este tipo de boleta no se puede comprar.';
+      return;
+    }
+
+    const cantidad = this.cantidadDe(tb);
+    this.comprandoId = tb.id;
+    this.cdr.detectChanges();
+
+    this.boletaService.comprarBoletas({
+      usuarioId,
+      tipoBoletaId: tb.id,
+      cantidad
+    })
+      .pipe(
+        timeout(60000),
+        finalize(() => {
+          this.comprandoId = null;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: () => {
+          if (tb.cantidadDisponible != null) {
+            tb.cantidadDisponible -= cantidad;
+          }
+          this.mensajeCompra = 'Compra realizada. Te llevamos a Mis Boletas...';
+          this.cdr.detectChanges();
+          setTimeout(() => this.router.navigate(['/mis-boletas']), 1200);
+        },
+        error: (err) => {
+          this.errorCompra = obtenerMensajeError(
+            err,
+            'No se pudo completar la compra. Intenta de nuevo.'
+          );
+          this.cdr.detectChanges();
         }
       });
   }

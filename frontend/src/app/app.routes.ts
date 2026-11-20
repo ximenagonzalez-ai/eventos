@@ -20,6 +20,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegistroComponent },
   { path: 'verificacion', component: VerificacionComponent },
+  { path: 'verificar-email', component: VerificacionComponent },
   { path: 'mis-boletas', component: MiBoletaComponent },
   { path: 'itinerario', component: ItinerarioComponent },
   { path: 'auditoria', component: AuditoriaComponent },
@@ -27,5 +28,5 @@ export const routes: Routes = [
   { path: 'restablecer-password', component: RestablecerPasswordComponent },
   { path: 'perfil', component: PerfilComponent },
   { path: 'ayuda', component: AyudaComponent },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];

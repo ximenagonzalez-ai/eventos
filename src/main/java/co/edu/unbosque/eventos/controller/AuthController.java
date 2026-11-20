@@ -55,7 +55,9 @@ public class AuthController {
         return switch (resultado.getEstado()) {
             case EXITOSO -> ResponseEntity.ok(Map.of(
                     "token", resultado.getToken(),
-                    "role", resultado.getRol()));
+                    "role", resultado.getRol(),
+                    "id", String.valueOf(resultado.getUsuarioId()),
+                    "email", request.getEmail().trim().toLowerCase()));
             case CREDENCIALES_INVALIDAS -> respuesta(HttpStatus.UNAUTHORIZED, "CREDENCIALES_INVALIDAS",
                     "Correo o contraseña incorrectos");
             case CUENTA_NO_VERIFICADA -> respuesta(HttpStatus.FORBIDDEN, "CUENTA_NO_VERIFICADA",

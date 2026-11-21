@@ -19,6 +19,10 @@ export class VerificacionComponent implements OnInit {
   mensaje: string = '';
   codigoError: string = '';
   token: string = '';
+  emailReenvio: string = '';
+  enviandoReenvio: boolean = false;
+  reenvioExitoso: boolean = false;
+  errorReenvio: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -81,4 +85,24 @@ export class VerificacionComponent implements OnInit {
       },
     });
   }
+  reenviarVerificacion(): void {
+    if (!this.emailReenvio.trim()) {
+      this.errorReenvio = 'Escribe tu correo electrónico.';
+      return;
+    }
+    this.enviandoReenvio = true;
+    this.errorReenvio = '';
+
+    this.authService.reenviarVerificacion({ email: this.emailReenvio.trim() }).subscribe({
+      next: () => {
+        this.enviandoReenvio = false;
+        this.reenvioExitoso = true;
+      },
+      error: () => {
+        this.enviandoReenvio = false;
+        this.errorReenvio = 'No se pudo enviar el correo. Intenta de nuevo.';
+      }
+    });
+  }
+
 }

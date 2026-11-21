@@ -38,6 +38,12 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
+    @Column(name = "username", nullable = false, length = 255)
+    private String legacyUsername;
+
+    @Column(name = "role", nullable = false, length = 255)
+    private String legacyRole;
+
     /** Contraseña encriptada con BCrypt. Nunca se expone en respuestas. */
     @Column(name = "contrasena_hash", nullable = false)
     private String contrasenaHash;
@@ -67,6 +73,17 @@ public class Usuario implements UserDetails {
     @PrePersist
     void antesDeGuardar() {
         this.fechaCreacion = LocalDateTime.now();
+        sincronizarColumnasLegadas();
+    }
+
+    @PreUpdate
+    void antesDeActualizar() {
+        sincronizarColumnasLegadas();
+    }
+
+    private void sincronizarColumnasLegadas() {
+        this.legacyUsername = this.email;
+        this.legacyRole = this.rol.name();
     }
 
     // ---- Métodos de UserDetails (Spring Security los llama internamente) ----

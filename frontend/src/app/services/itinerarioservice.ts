@@ -45,4 +45,11 @@ export class ItinerarioService {
       this.obtenerHeaders()
     );
   }
+
+  descargarPdf(itinerarioId: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/${itinerarioId}/pdf`, {
+      ...this.obtenerHeaders(),
+      responseType: 'blob'
+    });
+  }
 }

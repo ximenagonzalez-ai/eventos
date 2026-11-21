@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize, timeout } from 'rxjs';
 import { AuthService } from '../../services/authservice';
 import { obtenerMensajeError } from '../../utils/errorhelper';
 
@@ -14,7 +16,11 @@ export class OlvidePasswordComponent {
   error: string = '';
   isLoading: boolean = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private destroyRef: DestroyRef,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   onSubmit(): void {
     if (!this.email.trim()) {
@@ -25,14 +31,21 @@ export class OlvidePasswordComponent {
     this.mensaje = '';
     this.error = '';
 
-    this.authService.olvidePassword({ email: this.email }).subscribe({
+    this.authService.olvidePassword({ email: this.email }).pipe(
+      timeout(30_000),
+      finalize(() => {
+        this.isLoading = false;
+        if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (res) => {
         this.mensaje = res.mensaje;
-        this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = obtenerMensajeError(err, 'Ocurrió un error al procesar la solicitud.');
-        this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }

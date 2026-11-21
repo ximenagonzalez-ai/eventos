@@ -24,7 +24,10 @@ export class NavbarComponent {
   }
 
   get isAdmin(): boolean {
-    return localStorage.getItem('rol') === 'ADMIN';
+    return this.isLoggedIn && (
+      localStorage.getItem('rol') === 'ADMIN'
+      || localStorage.getItem('role') === 'ADMIN'
+    );
   }
 
   onSearch(): void {
@@ -54,6 +57,7 @@ export class NavbarComponent {
     event.preventDefault();
     localStorage.removeItem('token');
     localStorage.removeItem('rol');
+    localStorage.removeItem('role');
     localStorage.removeItem('email');
     this.isDropdownOpen = false;
     this.router.navigate(['/login']);

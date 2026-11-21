@@ -42,7 +42,9 @@
           name="password"
           [(ngModel)]="userData.password"
           placeholder="••••••••"
+          maxlength="72"
           required>
+        <small class="field-hint">La contraseña debe tener entre 8 y 72 caracteres.</small>
       </div>
 
       <div class="form-group">
@@ -54,14 +56,6 @@
           [(ngModel)]="confirmPassword"
           placeholder="••••••••"
           required>
-      </div>
-
-      <div class="form-group">
-        <label for="rol">Tipo de Cuenta</label>
-        <select id="rol" name="rol" [(ngModel)]="userData.rol" class="select-input">
-          <option value="USER">Usuario (Comprar Boletos)</option>
-          <option value="ADMIN">Administrador (Crear y Gestionar Eventos)</option>
-        </select>
       </div>
 
       <button type="submit" class="btn-submit" [disabled]="isLoading">

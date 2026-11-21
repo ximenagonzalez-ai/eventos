@@ -52,6 +52,10 @@
     {{ mensaje }}
   </p>
 
+  <p *ngIf="errorCategorias" class="alert-error" role="alert">
+    {{ errorCategorias }}
+  </p>
+
   <p *ngIf="error" class="alert-error">
     {{ error }}
   </p>

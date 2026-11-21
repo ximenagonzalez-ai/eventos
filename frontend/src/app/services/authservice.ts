@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, ReplaySubject, share, timeout } from 'rxjs';
 import {
   LoginRequest,
   LoginResponse,
@@ -17,6 +17,7 @@ import { Usuario } from '../models/usermodel';
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
+  private readonly verificationRequests = new Map<string, Observable<AuthMessageResponse>>();
 
   constructor(private http: HttpClient) {}
 
@@ -29,7 +30,27 @@ export class AuthService {
   }
 
   verificarEmail(token: string): Observable<AuthMessageResponse> {
-    return this.http.post<AuthMessageResponse>(`${this.apiUrl}/verificar-email?token=${token}`, {});
+    const tokenNormalizado = token.trim();
+    const solicitudExistente = this.verificationRequests.get(tokenNormalizado);
+    if (solicitudExistente) {
+      return solicitudExistente;
+    }
+
+    const params = new HttpParams().set('token', tokenNormalizado);
+    const solicitud = this.http
+      .post<AuthMessageResponse>(`${this.apiUrl}/verificar-email`, {}, { params })
+      .pipe(
+        timeout({ first: 20_000 }),
+        share({
+          connector: () => new ReplaySubject<AuthMessageResponse>(1),
+          resetOnError: false,
+          resetOnComplete: false,
+          resetOnRefCountZero: false,
+        })
+      );
+
+    this.verificationRequests.set(tokenNormalizado, solicitud);
+    return solicitud;
   }
 
   reenviarVerificacion(data: ReenviarVerificacionRequest): Observable<AuthMessageResponse> {

@@ -6,6 +6,7 @@
 
   <p *ngIf="mensaje" class="alert-success">{{ mensaje }}</p>
   <p *ngIf="error" class="alert-error">{{ error }}</p>
+  <p *ngIf="cargando" role="status">Cargando información de la cuenta...</p>
 
   <div *ngIf="usuarioSeleccionado" class="perfil-card">
     <div class="perfil-avatar">

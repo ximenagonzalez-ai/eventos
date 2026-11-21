@@ -227,6 +227,9 @@ public class AuthService {
  
         Usuario usuario = token.getUsuario();
         usuario.setContrasenaHash(passwordEncoder.encode(nuevaContrasena));
+        // Recibir y completar un reset por correo demuestra control del email,
+        // por lo tanto también se activa la verificación si aún no estaba hecha.
+        usuario.setEmailVerificado(true);
         usuarioRepository.save(usuario);
  
         token.setUsado(true);

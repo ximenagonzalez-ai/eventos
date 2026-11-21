@@ -12,6 +12,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import co.edu.unbosque.eventos.model.Usuario;
+
 import java.io.IOException;
 
 /**
@@ -69,7 +71,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (jwtUtil.validateToken(jwt, userDetails)) {
+            // Si el admin bloqueo la cuenta, un token anterior deja de servir
+            boolean cuentaActiva = !(userDetails instanceof Usuario u) || u.isActivo();
+
+            if (cuentaActiva && jwtUtil.validateToken(jwt, userDetails)) {
                 // Token válido: registramos al usuario en el contexto de seguridad
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(

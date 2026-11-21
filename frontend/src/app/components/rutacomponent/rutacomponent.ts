@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize, timeout } from 'rxjs';
 import { EventoService } from '../../services/eventoservice';
 import { Evento } from '../../models/eventomodel';
 import { obtenerMensajeError } from '../../utils/errorhelper';
@@ -35,29 +37,40 @@ export class RutaComponent implements OnInit {
     private route: ActivatedRoute,
     private eventoService: EventoService,
     private http: HttpClient,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef,
+    private destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
       this.error = '';
-      this.eventoService.obtenerPorId(id).subscribe({
+      this.isLoading = true;
+      this.eventoService.obtenerPorId(id).pipe(
+        timeout(30_000),
+        finalize(() => {
+          this.isLoading = false;
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe({
         next: (data) => {
           this.evento = data;
-          this.isLoading = false;
           if (data.lugar?.latitud && data.lugar?.longitud) {
             this.mapaUrl = this.construirMapaUrl(data.lugar.latitud, data.lugar.longitud);
           }
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.error = obtenerMensajeError(err, 'No se encontró el evento.');
-          this.isLoading = false;
+          this.evento = null;
         }
       });
     } else {
       this.error = 'El identificador del evento no es válido.';
       this.isLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -71,12 +84,14 @@ export class RutaComponent implements OnInit {
     this.errorUbicacion = '';
     this.errorRuta = '';
     this.instrucciones = [];
+    this.cdr.detectChanges();
 
     navigator.geolocation.getCurrentPosition(
       (posicion) => {
         this.origenLat = posicion.coords.latitude;
         this.origenLng = posicion.coords.longitude;
         this.obteniendoUbicacion = false;
+        this.cdr.detectChanges();
         this.calcularRuta();
       },
       (error) => {
@@ -86,6 +101,7 @@ export class RutaComponent implements OnInit {
         } else {
           this.errorUbicacion = 'No se pudo obtener tu ubicación. Intenta de nuevo.';
         }
+        this.cdr.detectChanges();
       },
       { timeout: 10000 }
     );
@@ -105,40 +121,59 @@ export class RutaComponent implements OnInit {
     this.errorRuta = '';
     this.instrucciones = [];
 
-    const token = localStorage.getItem('token') || '';
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
+    const params = new HttpParams()
+      .set('origenLat', this.origenLat)
+      .set('origenLng', this.origenLng)
+      .set('destinoLat', this.evento.lugar.latitud)
+      .set('destinoLng', this.evento.lugar.longitud)
+      .set('modo', 'car');
 
-    const body = {
-      origenLat: this.origenLat,
-      origenLng: this.origenLng,
-      destinoLat: this.evento.lugar.latitud,
-      destinoLng: this.evento.lugar.longitud
-    };
+    this.cdr.detectChanges();
 
-    this.http.post<any>('http://localhost:8080/api/ruta/calcular', body, { headers })
+    this.http.get<any>('http://localhost:8080/api/rutas', { params })
+      .pipe(
+        timeout(30_000),
+        finalize(() => {
+          this.calculandoRuta = false;
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe({
         next: (respuesta) => {
-          this.calculandoRuta = false;
-          this.instrucciones = respuesta.instrucciones || [];
-          this.distanciaTotal = respuesta.distanciaTotal || '';
-          this.duracionTotal = respuesta.duracionTotal || '';
+          const pasos: any[] = respuesta.pasos || [];
+          this.instrucciones = pasos.map(p =>
+            p.calle ? `${p.instruccion} (${p.calle})` : p.instruccion
+          );
+          this.distanciaTotal = this.formatearDistancia(respuesta.distanciaMetros);
+          this.duracionTotal = this.formatearDuracion(respuesta.duracionSegundos);
 
           this.mapaUrl = this.construirMapaUrlConOrigen(
             this.origenLat!, this.origenLng!,
             this.evento!.lugar!.latitud!, this.evento!.lugar!.longitud!
           );
+          this.cdr.detectChanges();
         },
         error: (err) => {
-          this.calculandoRuta = false;
           this.errorRuta = obtenerMensajeError(
             err,
-            'No se pudo calcular la ruta. Verifica tu sesión e intenta de nuevo.'
+            'No se pudo calcular la ruta. Intenta de nuevo.'
           );
+          this.cdr.detectChanges();
         }
       });
+  }
+
+  private formatearDistancia(metros: number): string {
+    if (metros == null) return '';
+    return metros >= 1000 ? (metros / 1000).toFixed(1) + ' km' : Math.round(metros) + ' m';
+  }
+
+  private formatearDuracion(segundos: number): string {
+    if (segundos == null) return '';
+    const min = Math.round(segundos / 60);
+    if (min < 60) return min + ' min';
+    return Math.floor(min / 60) + ' h ' + (min % 60) + ' min';
   }
 
   abrirEnGoogleMaps(): void {

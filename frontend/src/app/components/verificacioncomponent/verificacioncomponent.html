@@ -13,9 +13,10 @@
       <button class="btn-primary" routerLink="/login">Ir a Iniciar Sesión</button>
     </div>
 
-    <div *ngIf="error" class="mensaje-box error">
+    <div *ngIf="error" class="mensaje-box error" role="alert">
       <div class="icon-error">✕</div>
       <p>{{ mensaje }}</p>
+      <small *ngIf="codigoError" class="error-code">Código: {{ codigoError }}</small>
       <button class="btn-secondary" routerLink="/login">Volver al Inicio de Sesión</button>
     </div>
   </div>

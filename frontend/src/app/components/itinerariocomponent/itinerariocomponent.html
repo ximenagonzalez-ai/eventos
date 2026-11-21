@@ -31,6 +31,14 @@
         <span class="fecha" *ngIf="item.fechaCreacion">{{ item.fechaCreacion }}</span>
       </div>
 
+      <button
+        type="button"
+        class="btn-secondary"
+        [disabled]="descargandoPdfId !== null"
+        (click)="descargarPdf(item)">
+        {{ descargandoPdfId === item.id ? 'Generando PDF...' : 'Descargar PDF' }}
+      </button>
+
       <ul class="eventos-lista" *ngIf="item.eventos?.length; else sinEventos">
         <li *ngFor="let ev of item.eventos">{{ ev }}</li>
       </ul>

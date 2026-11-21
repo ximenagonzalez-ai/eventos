@@ -1,9 +1,10 @@
-
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { finalize, timeout } from 'rxjs';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { distinctUntilChanged, finalize, map, timeout } from 'rxjs';
 import { EventoService } from '../../services/eventoservice';
-import { Evento } from '../../models/eventomodel';
+import { Evento, TipoBoletaResumen } from '../../models/eventomodel';
+import { BoletaService } from '../../services/boletaservice';
 import { obtenerMensajeError } from '../../utils/errorhelper';
 
 @Component({
@@ -18,19 +19,32 @@ export class EventoDetalleComponent implements OnInit {
   isLoading: boolean = true;
   error: string = '';
 
+  // Compra de boletas
+  cantidades: { [tipoId: number]: number } = {};
+  comprandoId: number | null = null;
+  errorCompra: string = '';
+  mensajeCompra: string = '';
+
   constructor(
     private route: ActivatedRoute,
-    private eventoService: EventoService
+    private eventoService: EventoService,
+    private cdr: ChangeDetectorRef,
+    private boletaService: BoletaService,
+    private router: Router,
+    private destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const id = Number(params.get('id'));
-
+    this.route.paramMap.pipe(
+      map((params) => Number(params.get('id'))),
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe((id) => {
       if (!id || id <= 0) {
         this.evento = null;
         this.error = 'El identificador del evento no es válido.';
         this.isLoading = false;
+        this.cdr.detectChanges();
         return;
       }
 
@@ -48,25 +62,86 @@ export class EventoDetalleComponent implements OnInit {
         timeout(30000),
         finalize(() => {
           this.isLoading = false;
-        })
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         next: (data) => {
           if (data) {
             this.evento = data;
-
-            console.log('Detalle del evento recibido:', data);
           } else {
             this.error = 'No se encontró el evento solicitado.';
           }
         },
         error: (err) => {
-          console.error('Error cargando detalle del evento:', err);
-
           this.error = obtenerMensajeError(
             err,
             'No se pudieron cargar los detalles del evento.'
           );
+        }
+      });
+  }
+
+  cantidadDe(tb: TipoBoletaResumen): number {
+    return (tb.id != null && this.cantidades[tb.id]) || 1;
+  }
+
+  cambiarCantidad(tb: TipoBoletaResumen, delta: number): void {
+    if (tb.id == null) return;
+    const max = tb.cantidadDisponible ?? 10;
+    const nueva = this.cantidadDe(tb) + delta;
+    this.cantidades[tb.id] = Math.min(Math.max(nueva, 1), Math.min(max, 10));
+  }
+
+  comprar(tb: TipoBoletaResumen): void {
+    this.errorCompra = '';
+    this.mensajeCompra = '';
+
+    const token = localStorage.getItem('token');
+    const usuarioId = Number(localStorage.getItem('usuarioId'));
+
+    if (!token || !usuarioId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    if (tb.id == null) {
+      this.errorCompra = 'Este tipo de boleta no se puede comprar.';
+      return;
+    }
+
+    const cantidad = this.cantidadDe(tb);
+    this.comprandoId = tb.id;
+    this.cdr.detectChanges();
+
+    this.boletaService.comprarBoletas({
+      usuarioId,
+      tipoBoletaId: tb.id,
+      cantidad
+    })
+      .pipe(
+        timeout(60000),
+        finalize(() => {
+          this.comprandoId = null;
+          if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+        }),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe({
+        next: () => {
+          if (tb.cantidadDisponible != null) {
+            tb.cantidadDisponible -= cantidad;
+          }
+          this.mensajeCompra = 'Compra realizada. Te llevamos a Mis Boletas...';
+          this.cdr.detectChanges();
+          setTimeout(() => this.router.navigate(['/mis-boletas']), 1200);
+        },
+        error: (err) => {
+          this.errorCompra = obtenerMensajeError(
+            err,
+            'No se pudo completar la compra. Intenta de nuevo.'
+          );
+          this.cdr.detectChanges();
         }
       });
   }

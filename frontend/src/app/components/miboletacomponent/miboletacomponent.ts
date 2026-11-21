@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize, timeout } from 'rxjs';
 import { Boleta, CompraDTO } from '../../models/boletamodel';
 import { BoletaService } from '../../services/boletaservice';
 import { obtenerMensajeError } from '../../utils/errorhelper';
@@ -10,7 +12,7 @@ import { obtenerMensajeError } from '../../utils/errorhelper';
   styleUrls: ['./miboletacomponent.css']
 })
 export class MiBoletaComponent implements OnInit {
-  usuarioId = 1;
+  usuarioId = Number(localStorage.getItem('usuarioId')) || 0;
   esAdmin = false;
   mostrarModal = false;
 
@@ -27,7 +29,11 @@ export class MiBoletaComponent implements OnInit {
   cargando = false;
   error = '';
 
-  constructor(private boletaService: BoletaService) {}
+  constructor(
+    private boletaService: BoletaService,
+    private cdr: ChangeDetectorRef,
+    private destroyRef: DestroyRef
+  ) {}
 
   ngOnInit(): void {
     this.cargarCompras();
@@ -68,34 +74,53 @@ export class MiBoletaComponent implements OnInit {
   }
 
   cargarCompras(): void {
+    if (!this.usuarioId) {
+      this.error = 'Inicia sesión para ver tus boletas.';
+      return;
+    }
+
     this.cargando = true;
     this.error = '';
 
-    this.boletaService.listarComprasPorUsuario(this.usuarioId).subscribe({
+    this.boletaService.listarComprasPorUsuario(this.usuarioId).pipe(
+      timeout(30_000),
+      finalize(() => {
+        this.cargando = false;
+        if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (compras) => {
         this.compras = compras;
         this.boletas = [];
         this.boletasPorCompra = {};
-        this.cargando = false;
 
         compras.forEach((c) => this.cargarBoletas(c.id, c.estado));
       },
       error: (err) => {
         this.error = obtenerMensajeError(err, 'No se pudieron cargar tus compras.');
-        this.cargando = false;
+        this.compras = [];
+        this.boletas = [];
+        this.boletasPorCompra = {};
       }
     });
   }
 
   cargarBoletas(compraId: number, estadoCompra?: string): void {
-    this.boletaService.listarBoletasPorCompra(compraId, estadoCompra).subscribe({
+    this.boletaService.listarBoletasPorCompra(compraId, estadoCompra).pipe(
+      timeout(30_000),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (boletas) => {
         this.boletasPorCompra[compraId] = boletas;
         this.boletas = [...this.boletas, ...boletas];
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.boletasPorCompra[compraId] = [];
         this.error = obtenerMensajeError(err, 'No se pudieron cargar algunas boletas.');
+        this.cdr.detectChanges();
+        this.cdr.detectChanges();
       }
     });
   }
@@ -114,14 +139,19 @@ export class MiBoletaComponent implements OnInit {
       }
     }
 
-    this.boletaService.cancelarCompra(compraIdEncontrada).subscribe({
+    this.boletaService.cancelarCompra(compraIdEncontrada).pipe(
+      timeout(30_000),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: () => {
         this.boletas = this.boletas.map((b) =>
           b.id === id ? { ...b, estado: 'CANCELADA' } : b
         );
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = obtenerMensajeError(err, 'No se pudo cancelar la compra.');
+        this.cdr.detectChanges();
       }
     });
   }

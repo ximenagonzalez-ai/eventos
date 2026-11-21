@@ -195,6 +195,12 @@ public class EventoService implements CRUDOperation<EventoDTO> {
                 eventoRepo.findByCategoriaId(categoriaId));
     }
 
+    /**
+     * Filtra eventos por estado (ACTIVO, PROXIMO, FINALIZADO, CANCELADO).
+     *
+     * @param estado Estado a filtrar
+     * @return Lista de eventos con ese estado
+     */
     @Transactional(readOnly = true)
     public List<EventoDTO> getByEstado(EstadoEvento estado) {
 
@@ -202,15 +208,26 @@ public class EventoService implements CRUDOperation<EventoDTO> {
                 eventoRepo.findByEstado(estado));
     }
 
+    /**
+     * Filtra eventos por categoria y estado combinados.
+     * Ejemplo: todos los eventos ACTIVOS de tipo Teatro.
+     *
+     * @param categoriaId ID de la categoria
+     * @param estado      Estado del evento
+     * @return Lista de eventos que cumplen ambos filtros
+     */
     @Transactional(readOnly = true)
-    public List<EventoDTO> getByCategoriaYEstado(
-            Long categoriaId, EstadoEvento estado) {
-
-        return mapearLista(
-                eventoRepo.findByCategoriaIdAndEstado(
-                        categoriaId, estado));
+    public List<EventoDTO> getByCategoriaYEstado(Long categoriaId, EstadoEvento estado) {
+        return mapearLista(eventoRepo.findByCategoriaIdAndEstado(categoriaId, estado));
     }
 
+    /**
+     * Busca eventos por ciudad del lugar.
+     * El frontend puede usar esto para filtrar por ubicacion.
+     *
+     * @param ciudad Ciudad a buscar
+     * @return Lista de eventos en esa ciudad
+     */
     @Transactional(readOnly = true)
     public List<EventoDTO> getByCiudad(String ciudad) {
 
@@ -218,6 +235,12 @@ public class EventoService implements CRUDOperation<EventoDTO> {
                 eventoRepo.findByLugarCiudadIgnoreCase(ciudad));
     }
 
+    /**
+     * Busca eventos cuyo nombre contenga el texto dado.
+     *
+     * @param nombre Texto a buscar
+     * @return Lista de eventos que coincidan
+     */
     @Transactional(readOnly = true)
     public List<EventoDTO> buscarPorNombre(String nombre) {
 
@@ -225,19 +248,38 @@ public class EventoService implements CRUDOperation<EventoDTO> {
                 eventoRepo.findByNombreContainingIgnoreCase(nombre));
     }
 
+    /**
+     * Filtra eventos que inician en un rango de fechas.
+     *
+     * @param inicio Fecha inicio del rango
+     * @param fin    Fecha fin del rango
+     * @return Lista de eventos en ese rango
+     */
     @Transactional(readOnly = true)
-    public List<EventoDTO> getByRangoFechas(
-            LocalDateTime inicio, LocalDateTime fin) {
-
-        return mapearLista(
-                eventoRepo.findByFechaInicioBetween(inicio, fin));
+    public List<EventoDTO> getByRangoFechas(LocalDateTime inicio, LocalDateTime fin) {
+        return mapearLista(eventoRepo.findByFechaInicioBetween(inicio, fin));
     }
 
-    // SINCRONIZAR EVENTOS EXTERNOS
-    @Transactional
-    public int sincronizarDesdeApiExterna(
-            List<EventoDTO> eventosExternos) {
+    // -----------------------------------------------------------------------
+    // PUNTO DE INTEGRACION CON API EXTERNA
+    // -----------------------------------------------------------------------
 
+    /**
+     * Sincroniza eventos desde una API externa.
+     * Este metodo recibe la lista de DTOs que ya se construloo consumiendo la API
+     * y los guarda en la base de datos evitando duplicados.
+     *
+     * 
+     * 1. En la clase de cliente HTTP (EventoApiClient), consume la API externa
+     *    y convierte cada respuesta en un EventoDTO con fuente = EXTERNO e idExterno = id de la API.
+     * 2. Llama a este metodo pasando esa lista.
+     * 3. El metodo verifica con findByIdexterno() si el evento ya existe antes de guardar.
+     *
+     * @param eventosExternos Lista de EventoDTO provenientes de la API externa
+     * @return Numero de eventos nuevos que se guardaron
+     */
+    @Transactional
+    public int sincronizarDesdeApiExterna(List<EventoDTO> eventosExternos) {
         int nuevos = 0;
 
         for (EventoDTO dto : eventosExternos) {

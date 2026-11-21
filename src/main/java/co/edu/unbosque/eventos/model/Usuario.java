@@ -38,6 +38,12 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
+    @Column(name = "username", nullable = false, length = 255)
+    private String legacyUsername;
+
+    @Column(name = "role", nullable = false, length = 255)
+    private String legacyRole;
+
     /** Contraseña encriptada con BCrypt. Nunca se expone en respuestas. */
     @Column(name = "contrasena_hash", nullable = false)
     private String contrasenaHash;
@@ -67,6 +73,17 @@ public class Usuario implements UserDetails {
     @PrePersist
     void antesDeGuardar() {
         this.fechaCreacion = LocalDateTime.now();
+        sincronizarColumnasLegadas();
+    }
+
+    @PreUpdate
+    void antesDeActualizar() {
+        sincronizarColumnasLegadas();
+    }
+
+    private void sincronizarColumnasLegadas() {
+        this.legacyUsername = this.email;
+        this.legacyRole = this.rol.name();
     }
 
     // ---- Métodos de UserDetails (Spring Security los llama internamente) ----
@@ -92,16 +109,20 @@ public class Usuario implements UserDetails {
     @Override
     public boolean isAccountNonExpired() { return true; }
 
-    /** La cuenta se bloquea si el admin pone activo = false. */
+    /**
+     * Siempre true a proposito: el estado (bloqueada / sin verificar) lo revisa AuthService.login
+     * DESPUES de validar la contrasena. Si Spring lo revisara antes, el login devolveria
+     * CREDENCIALES_INVALIDAS para cuentas sin verificar y se filtraria el estado de la cuenta.
+     */
     @Override
-    public boolean isAccountNonLocked() { return activo; }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
     public boolean isCredentialsNonExpired() { return true; }
 
-    /** Solo puede loguear si está activo Y confirmó su email. */
+    /** Siempre true a proposito (ver isAccountNonLocked). AuthService.login revisa activo y emailVerificado. */
     @Override
-    public boolean isEnabled() { return activo && emailVerificado; }
+    public boolean isEnabled() { return true; }
 
     // ---- Getters y Setters ----
 

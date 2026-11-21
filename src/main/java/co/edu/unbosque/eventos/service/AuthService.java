@@ -22,6 +22,7 @@ import co.edu.unbosque.eventos.model.ResultadoRestablecimiento;
 import co.edu.unbosque.eventos.model.TipoCorreo;
 import co.edu.unbosque.eventos.model.TipoToken;
 import co.edu.unbosque.eventos.model.TokenUsuario;
+import co.edu.unbosque.eventos.model.Rol;
 import co.edu.unbosque.eventos.model.Usuario;
 import co.edu.unbosque.eventos.repository.TokenUsuarioRepository;
 import co.edu.unbosque.eventos.repository.UsuarioRepository;
@@ -83,6 +84,7 @@ public class AuthService {
         usuario.setNombre(request.getNombre().trim());
         usuario.setEmail(email);
         usuario.setContrasenaHash(passwordEncoder.encode(request.getContrasena()));
+        usuario.setRol(Rol.USER);
         usuario = usuarioRepository.save(usuario);
  
         enviarCorreoVerificacion(usuario);
@@ -123,7 +125,7 @@ public class AuthService {
  
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String token = jwtUtil.generateToken(userDetails);
-        return ResultadoLogin.exitoso(token, usuario.getRol().name());
+        return ResultadoLogin.exitoso(token, usuario.getRol().name(), usuario.getId());
     }
  
     // ===================== VERIFICACIÓN DE CORREO =====================

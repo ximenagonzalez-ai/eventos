@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize, timeout } from 'rxjs';
 import { AuditoriaDTO } from '../../models/auditoriamodel';
 import { ReporteDTO } from '../../models/reportemodel';
 import { AuditoriaService } from '../../services/auditoriaservice';
@@ -22,7 +24,9 @@ export class AuditoriaComponent implements OnInit {
 
   constructor(
     private auditoriaService: AuditoriaService,
-    private reporteService: ReporteService
+    private reporteService: ReporteService,
+    private destroyRef: DestroyRef,
+    private cdr: ChangeDetectorRef
   ) {}
 
   get isAdmin(): boolean {
@@ -45,14 +49,20 @@ export class AuditoriaComponent implements OnInit {
     this.cargandoAuditoria = true;
     this.error = '';
 
-    this.auditoriaService.listarPorUsuario(this.usuarioIdFiltro).subscribe({
+    this.auditoriaService.listarPorUsuario(this.usuarioIdFiltro).pipe(
+      timeout(30_000),
+      finalize(() => {
+        this.cargandoAuditoria = false;
+        if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (data) => {
         this.auditorias = data || [];
-        this.cargandoAuditoria = false;
       },
       error: (err) => {
         this.error = obtenerMensajeError(err, 'No se pudo cargar la auditoría.');
-        this.cargandoAuditoria = false;
+        this.auditorias = [];
       }
     });
   }
@@ -61,14 +71,20 @@ export class AuditoriaComponent implements OnInit {
     this.cargandoReportes = true;
     this.error = '';
 
-    this.reporteService.ventasPorEvento().subscribe({
+    this.reporteService.ventasPorEvento().pipe(
+      timeout(30_000),
+      finalize(() => {
+        this.cargandoReportes = false;
+        if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next: (data) => {
         this.reportes = data || [];
-        this.cargandoReportes = false;
       },
       error: (err) => {
         this.error = obtenerMensajeError(err, 'No se pudieron cargar los reportes.');
-        this.cargandoReportes = false;
+        this.reportes = [];
       }
     });
   }

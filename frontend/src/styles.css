@@ -5,6 +5,43 @@
   font-family: inherit;
 }
 
+html {
+  width: 100%;
+  overflow-x: clip;
+}
+
+body {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  overflow-x: clip;
+}
+
+app-root {
+  display: block;
+  min-width: 0;
+  width: 100%;
+}
+
+main {
+  min-width: 0;
+}
+
+img,
+video,
+iframe,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
 :root,
 :root[data-theme="dark"] {
   --bg-primary: #0d0e12;
@@ -83,3 +120,4 @@ body {
   color: var(--text-main);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+

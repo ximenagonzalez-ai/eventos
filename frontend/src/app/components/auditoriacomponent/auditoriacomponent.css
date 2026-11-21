@@ -113,3 +113,57 @@
   color: #94a3b8;
   margin: 0;
 }
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .admin-page {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .tabla-datos {
+    min-width: 620px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-page {
+    margin-top: 24px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .panel-card {
+    padding: 16px;
+  }
+
+  .panel-top {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .filtro-row {
+    width: 100%;
+  }
+
+  .filtro-row input {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+  }
+
+  .filtro-row button,
+  .panel-top > button {
+    min-height: 40px;
+  }
+
+  .tabla-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .tabla-datos {
+    min-width: 640px;
+  }
+}

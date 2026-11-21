@@ -283,64 +283,26 @@ public class EventoService implements CRUDOperation<EventoDTO> {
         int nuevos = 0;
 
         for (EventoDTO dto : eventosExternos) {
-
-            if (dto.getIdexterno() == null
-                    || dto.getIdexterno().isBlank()) {
-                continue;
-            }
-
-            // Si ya existe, actualizar datos externos
-            Optional<Evento> existente =
-                    eventoRepo.findByIdexterno(
-                            dto.getIdexterno());
-
-            if (existente.isPresent()) {
-
-                Evento entity = existente.get();
-
-                // No modificar eventos locales
-                if (entity.getFuente() != FuenteEvento.EXTERNO) {
+            // Actualiza la información externa de eventos ya sincronizados.
+            if (dto.getIdexterno() != null) {
+                Optional<Evento> existente = eventoRepo.findByIdexterno(dto.getIdexterno());
+                if (existente.isPresent()) {
+                    Evento entity = existente.get();
+                    if (dto.getUrlVentaExterna() != null) {
+                        entity.setUrlVentaExterna(dto.getUrlVentaExterna());
+                    }
+                    if (dto.getPrecioMinimoExterno() != null) {
+                        entity.setPrecioMinimoExterno(dto.getPrecioMinimoExterno());
+                    }
+                    if (dto.getPrecioMaximoExterno() != null) {
+                        entity.setPrecioMaximoExterno(dto.getPrecioMaximoExterno());
+                    }
+                    if (dto.getMonedaPrecioExterno() != null) {
+                        entity.setMonedaPrecioExterno(dto.getMonedaPrecioExterno());
+                    }
+                    eventoRepo.save(entity);
                     continue;
                 }
-
-                // Solo actualizar precios cuando la API
-                // proporciona informacion valida.
-                if (dto.getMonedaPrecioExterno() != null
-                        && (dto.getPrecioMinimoExterno() != null
-                        || dto.getPrecioMaximoExterno() != null)) {
-
-                    entity.setPrecioMinimoExterno(
-                            dto.getPrecioMinimoExterno());
-
-                    entity.setPrecioMaximoExterno(
-                            dto.getPrecioMaximoExterno());
-
-                    entity.setMonedaPrecioExterno(
-                            dto.getMonedaPrecioExterno());
-                }
-
-                if (dto.getUrlVentaExterna() != null
-                        && !dto.getUrlVentaExterna().isBlank()) {
-
-                    entity.setUrlVentaExterna(
-                            dto.getUrlVentaExterna());
-                }
-
-                eventoRepo.save(entity);
-                continue;
-            }
-
-            // Validar categoria
-            if (dto.getCategoriaId() == null) {
-                continue;
-            }
-
-            Optional<Categoria> categoria =
-                    categoriaRepo.findById(
-                            dto.getCategoriaId());
-
-            if (categoria.isEmpty()) {
-                continue;
             }
 
             // Validar lugar
@@ -429,7 +391,11 @@ public class EventoService implements CRUDOperation<EventoDTO> {
 
             entity.setFuente(FuenteEvento.EXTERNO);
             entity.setIdexterno(dto.getIdexterno());
-            entity.setCategoria(categoria.get());
+            entity.setUrlVentaExterna(dto.getUrlVentaExterna());
+            entity.setPrecioMinimoExterno(dto.getPrecioMinimoExterno());
+            entity.setPrecioMaximoExterno(dto.getPrecioMaximoExterno());
+            entity.setMonedaPrecioExterno(dto.getMonedaPrecioExterno());
+            entity.setCategoria(catFound.get());
             entity.setLugar(lugar);
 
             // Guardar datos reales de Ticketmaster
@@ -467,6 +433,10 @@ public class EventoService implements CRUDOperation<EventoDTO> {
         dto.setEstado(evento.getEstado());
         dto.setFuente(evento.getFuente());
         dto.setIdexterno(evento.getIdexterno());
+        dto.setUrlVentaExterna(evento.getUrlVentaExterna());
+        dto.setPrecioMinimoExterno(evento.getPrecioMinimoExterno());
+        dto.setPrecioMaximoExterno(evento.getPrecioMaximoExterno());
+        dto.setMonedaPrecioExterno(evento.getMonedaPrecioExterno());
 
         // Informacion externa
         dto.setPrecioMinimoExterno(

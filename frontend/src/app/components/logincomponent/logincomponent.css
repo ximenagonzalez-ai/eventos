@@ -121,3 +121,29 @@
 .login-footer a:hover {
   text-decoration: underline;
 }
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .login-container {
+    min-height: 72vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    min-height: 0;
+    padding: 28px 16px;
+  }
+
+  .login-card {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+
+  .login-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .btn-submit {
+    min-height: 44px;
+  }
+}

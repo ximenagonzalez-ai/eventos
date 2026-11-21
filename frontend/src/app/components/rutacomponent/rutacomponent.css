@@ -49,6 +49,8 @@
 
 .mapa-wrapper iframe {
   display: block;
+  width: 100%;
+  max-width: 100%;
 }
 
 .sin-coords {
@@ -225,8 +227,64 @@
   padding: 40px 0;
 }
 
-@media (max-width: 600px) {
+@media (min-width: 769px) and (max-width: 1024px) {
+  .ruta-container {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .resumen-ruta {
+    gap: 14px;
+  }
+
+  .resumen-item {
+    gap: 12px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ruta-container {
+    margin-top: 20px;
+    margin-bottom: 48px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .ruta-header h1 {
+    font-size: 1.5rem;
+    overflow-wrap: anywhere;
+  }
+
+  .mapa-wrapper iframe {
+    height: 300px;
+  }
+
+  .paso-card,
+  .instrucciones-box,
+  .sin-coords {
+    padding: 18px;
+  }
+
   .resumen-ruta {
     flex-direction: column;
+  }
+
+  .resumen-item {
+    min-width: 0;
+  }
+
+  .botones-ruta {
+    flex-direction: column;
+  }
+
+  .btn-gmaps,
+  .btn-ubicacion {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .paso-item {
+    padding: 10px;
   }
 }

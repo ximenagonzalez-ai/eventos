@@ -144,3 +144,58 @@
   border-radius: 10px;
   margin-bottom: 20px;
 }
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .perfil-container {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .users-table {
+    min-width: 680px;
+  }
+}
+
+@media (max-width: 768px) {
+  .perfil-container {
+    margin-top: 24px;
+    margin-bottom: 48px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .perfil-header h2 {
+    font-size: 1.65rem;
+  }
+
+  .perfil-card {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .perfil-info {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-users-section {
+    margin-top: 32px;
+  }
+
+  .table-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .users-table {
+    min-width: 680px;
+  }
+
+  .btn-danger {
+    min-height: 40px;
+  }
+}

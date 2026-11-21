@@ -12,6 +12,14 @@ public class TmEventoDTO {
     private String name;
     private String url;
 
+    /** Ticketmaster price ranges, when available. */
+    private List<TmPriceRangeDTO> priceRanges;
+
+    /**
+     * Lista de imagenes del evento.
+     * Ticketmaster devuelve varias en distintos tamaños.
+     * Tomamos la primera disponible para imagenUrl.
+     */
     private List<TmImageDTO> images;
     private TmDatesDTO dates;
     private List<TmClassificationDTO> classifications;
@@ -59,9 +67,11 @@ public class TmEventoDTO {
         return dates;
     }
 
-    public void setDates(TmDatesDTO dates) {
-        this.dates = dates;
-    }
+    public List<TmPriceRangeDTO> getPriceRanges() { return priceRanges; }
+    public void setPriceRanges(List<TmPriceRangeDTO> priceRanges) { this.priceRanges = priceRanges; }
+
+    public List<TmImageDTO> getImages() { return images; }
+    public void setImages(List<TmImageDTO> images) { this.images = images; }
 
     public List<TmClassificationDTO> getClassifications() {
         return classifications;

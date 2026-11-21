@@ -112,3 +112,25 @@
   border-color: var(--accent-color);
   color: var(--text-main);
 }
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .auth-container {
+    min-height: 72vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .auth-container {
+    min-height: 0;
+    padding: 28px 16px;
+  }
+
+  .auth-card {
+    padding: 28px 20px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    min-height: 44px;
+  }
+}

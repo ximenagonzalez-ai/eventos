@@ -127,3 +127,29 @@
 .register-footer a:hover {
   text-decoration: underline;
 }
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .register-wrapper {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-wrapper {
+    min-height: 0;
+    padding: 28px 16px;
+  }
+
+  .register-card {
+    padding: 24px 20px;
+  }
+
+  .register-card h2 {
+    font-size: 1.5rem;
+  }
+
+  .btn-submit {
+    min-height: 44px;
+  }
+}

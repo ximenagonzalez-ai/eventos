@@ -199,6 +199,26 @@ public class EventoApiClient {
 
         dto.setEstado(EstadoEvento.PROXIMO);
         dto.setFuente(FuenteEvento.EXTERNO);
+        dto.setUrlVentaExterna(tm.getUrl());
+
+        if (tm.getPriceRanges() != null) {
+            for (TmPriceRangeDTO rango : tm.getPriceRanges()) {
+                if (rango == null) continue;
+                if (rango.getMin() != null
+                        && (dto.getPrecioMinimoExterno() == null
+                        || rango.getMin() < dto.getPrecioMinimoExterno())) {
+                    dto.setPrecioMinimoExterno(rango.getMin());
+                }
+                if (rango.getMax() != null
+                        && (dto.getPrecioMaximoExterno() == null
+                        || rango.getMax() > dto.getPrecioMaximoExterno())) {
+                    dto.setPrecioMaximoExterno(rango.getMax());
+                }
+                if (dto.getMonedaPrecioExterno() == null && rango.getCurrency() != null) {
+                    dto.setMonedaPrecioExterno(rango.getCurrency());
+                }
+            }
+        }
 
         // Categoria
         dto.setCategoriaId(resolverCategoria(tm));

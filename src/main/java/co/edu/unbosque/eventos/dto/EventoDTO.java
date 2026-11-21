@@ -18,6 +18,19 @@ public class EventoDTO {
     private EstadoEvento estado;
     private FuenteEvento fuente;
     private String idexterno;
+
+    private String urlVentaExterna;
+
+    private Double precioMinimoExterno;
+
+    private Double precioMaximoExterno;
+
+    private String monedaPrecioExterno;
+
+    /**
+     * ID de la categoria a la que pertenece el evento.
+     * Se usa al crear o actualizar un evento.
+     */
     private Long categoriaId;
     private String categoriaNombre;
     private LugarDTO lugar;
@@ -139,9 +152,20 @@ public class EventoDTO {
         return categoriaNombre;
     }
 
-    public void setCategoriaNombre(String categoriaNombre) {
-        this.categoriaNombre = categoriaNombre;
-    }
+    public String getUrlVentaExterna() { return urlVentaExterna; }
+    public void setUrlVentaExterna(String urlVentaExterna) { this.urlVentaExterna = urlVentaExterna; }
+
+    public Double getPrecioMinimoExterno() { return precioMinimoExterno; }
+    public void setPrecioMinimoExterno(Double precioMinimoExterno) { this.precioMinimoExterno = precioMinimoExterno; }
+
+    public Double getPrecioMaximoExterno() { return precioMaximoExterno; }
+    public void setPrecioMaximoExterno(Double precioMaximoExterno) { this.precioMaximoExterno = precioMaximoExterno; }
+
+    public String getMonedaPrecioExterno() { return monedaPrecioExterno; }
+    public void setMonedaPrecioExterno(String monedaPrecioExterno) { this.monedaPrecioExterno = monedaPrecioExterno; }
+
+    public Long getCategoriaId() { return categoriaId; }
+    public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }
 
     public LugarDTO getLugar() {
         return lugar;

@@ -13,15 +13,34 @@
 
     <div class="navbar-right-group">
 
-      <nav class="nav-links">
-        <a *ngIf="isLoggedIn && !isAdmin" routerLink="/mis-boletas" routerLinkActive="active" class="nav-item">Mis Boletas</a>
-        <a *ngIf="isLoggedIn && !isAdmin" routerLink="/itinerario" routerLinkActive="active" class="nav-item">Itinerario</a>
-        <a *ngIf="isAdmin" routerLink="/administracion" routerLinkActive="active" class="nav-item">Administración</a>
-        <a *ngIf="isAdmin" routerLink="/auditoria" routerLinkActive="active" class="nav-item">Auditoría</a>
-        <a routerLink="/conciertos" class="nav-item">Conciertos</a>
-        <a routerLink="/deportes" class="nav-item">Deportes</a>
-        <a routerLink="/teatro" class="nav-item">Teatro</a>
-      </nav>
+      <div class="mobile-nav">
+        <input
+          type="checkbox"
+          id="mobile-nav-toggle"
+          class="mobile-nav-checkbox"
+          aria-label="Mostrar navegación">
+        <label class="mobile-nav-toggle" for="mobile-nav-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </label>
+        <div class="mobile-nav-panel">
+          <nav class="nav-links">
+            <a *ngIf="isLoggedIn && !isAdmin" routerLink="/mis-boletas" routerLinkActive="active" class="nav-item">Mis Boletas</a>
+            <a *ngIf="isLoggedIn && !isAdmin" routerLink="/itinerario" routerLinkActive="active" class="nav-item">Itinerario</a>
+            <a *ngIf="isAdmin" routerLink="/administracion" routerLinkActive="active" class="nav-item">Administración</a>
+            <a *ngIf="isAdmin" routerLink="/auditoria" routerLinkActive="active" class="nav-item">Auditoría</a>
+            <a routerLink="/conciertos" class="nav-item">Conciertos</a>
+            <a routerLink="/deportes" class="nav-item">Deportes</a>
+            <a routerLink="/teatro" class="nav-item">Teatro</a>
+          </nav>
+
+          <div *ngIf="!isLoggedIn" class="auth-actions">
+            <a routerLink="/login" class="nav-item">Iniciar Sesión</a>
+            <a routerLink="/registro" class="nav-item">Registrarse</a>
+          </div>
+        </div>
+      </div>
 
       <div class="customizer-container" (click)="toggleCustomizer($event)">
         <button class="customizer-btn" aria-label="Personalizar tema">
@@ -46,11 +65,6 @@
             <button class="color-circle theme-gold" (click)="changeTheme('gold')" title="Dorado Lujo"></button>
           </div>
         </div>
-      </div>
-
-      <div *ngIf="!isLoggedIn" class="auth-actions">
-        <a routerLink="/login" class="nav-item">Iniciar Sesión</a>
-        <a routerLink="/registro" class="nav-item">Registrarse</a>
       </div>
 
       <div *ngIf="isLoggedIn" class="account-menu" (click)="toggleDropdown($event)">

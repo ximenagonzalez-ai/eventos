@@ -262,3 +262,70 @@
   border-radius: 10px;
   margin-bottom: 20px;
 }
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .catalogo-container {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .eventos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .catalogo-container {
+    margin-top: 24px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .catalogo-header {
+    align-items: stretch;
+    margin-bottom: 20px;
+  }
+
+  .catalogo-header h1 {
+    font-size: 1.65rem;
+  }
+
+  .btn-sync {
+    min-height: 44px;
+    width: 100%;
+  }
+
+  .filtros-bar {
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .categorias-pills {
+    gap: 8px;
+  }
+
+  .pill {
+    min-height: 40px;
+    padding: 8px 12px;
+  }
+
+  .busqueda-ciudad {
+    width: 100%;
+  }
+
+  .busqueda-ciudad input {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .btn-filtrar {
+    min-height: 40px;
+  }
+
+  .eventos-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+}

@@ -1,3 +1,4 @@
+
 package co.edu.unbosque.eventos.service;
 
 import java.time.LocalDateTime;
@@ -7,6 +8,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unbosque.eventos.dto.EventoDTO;
 import co.edu.unbosque.eventos.dto.LugarDTO;
@@ -21,30 +23,18 @@ import co.edu.unbosque.eventos.repository.CategoriaRepository;
 import co.edu.unbosque.eventos.repository.EventoRepository;
 import co.edu.unbosque.eventos.repository.LugarRepository;
 
-/**
- * Servicio principal para operaciones sobre la entidad Evento.
- * Gestiona el catalogo completo: creacion, consulta, filtrado y eliminacion.
- *
- * -- NOTA PARA LA API EXTERNA --
- * El metodo sincronizarDesdeApiExterna() es el punto de integracion.
- * Cuando tengas la API lista, llena ese metodo con la logica de consumo.
- */
 @Service
 public class EventoService implements CRUDOperation<EventoDTO> {
 
-    /** Repositorio de eventos. */
     @Autowired
     private EventoRepository eventoRepo;
 
-    /** Repositorio de categorias para validar y asociar al evento. */
     @Autowired
     private CategoriaRepository categoriaRepo;
 
-    /** Repositorio de lugares para validar y asociar al evento. */
     @Autowired
     private LugarRepository lugarRepo;
 
-    /** Constructor por defecto. */
     public EventoService() {}
 
     @Override
@@ -57,85 +47,117 @@ public class EventoService implements CRUDOperation<EventoDTO> {
         return eventoRepo.existsById(id);
     }
 
-    /**
-     * Crea un nuevo evento en el catalogo (fuente LOCAL).
-     *
-     * @param data DTO con los datos del evento (debe incluir categoriaId y lugar.id validos)
-     * @return 0 exito, 1 categoria no encontrada, 2 lugar no encontrado
-     */
+    // CREAR EVENTO LOCAL
     @Override
+    @Transactional
     public int create(EventoDTO data) {
-        Optional<Categoria> catFound = categoriaRepo.findById(data.getCategoriaId());
-        if (catFound.isEmpty()) return 1;
 
-        Optional<Lugar> lugarFound = lugarRepo.findById(data.getLugar().getId());
-        if (lugarFound.isEmpty()) return 2;
+        if (data == null || data.getCategoriaId() == null) {
+            return 1;
+        }
+
+        Optional<Categoria> categoria =
+                categoriaRepo.findById(data.getCategoriaId());
+
+        if (categoria.isEmpty()) {
+            return 1;
+        }
+
+        if (data.getLugar() == null
+                || data.getLugar().getId() == null) {
+            return 2;
+        }
+
+        Optional<Lugar> lugar =
+                lugarRepo.findById(data.getLugar().getId());
+
+        if (lugar.isEmpty()) {
+            return 2;
+        }
 
         Evento entity = new Evento();
+
         entity.setNombre(data.getNombre());
         entity.setDescripcion(data.getDescripcion());
         entity.setFechaInicio(data.getFechaInicio());
         entity.setFechaFin(data.getFechaFin());
         entity.setImagenUrl(data.getImagenUrl());
-        entity.setEstado(data.getEstado() != null ? data.getEstado() : EstadoEvento.PROXIMO);
+
+        entity.setEstado(
+                data.getEstado() != null
+                        ? data.getEstado()
+                        : EstadoEvento.PROXIMO);
+
         entity.setFuente(FuenteEvento.LOCAL);
-        entity.setCategoria(catFound.get());
-        entity.setLugar(lugarFound.get());
+        entity.setCategoria(categoria.get());
+        entity.setLugar(lugar.get());
 
         eventoRepo.save(entity);
+
         return 0;
     }
 
-    /**
-     * Retorna todos los eventos del catalogo con sus datos de lugar y categoria.
-     *
-     * @return Lista completa de EventoDTO
-     */
+    // CONSULTAR TODOS
     @Override
+    @Transactional(readOnly = true)
     public List<EventoDTO> getAll() {
-        List<Evento> lista = eventoRepo.findAll();
-        return mapearLista(lista);
+
+        return mapearLista(eventoRepo.findAll());
     }
 
-    /**
-     * Elimina un evento por su ID.
-     *
-     * @param id ID del evento
-     * @return 0 exito, 1 si no existe
-     */
+    // ELIMINAR
     @Override
+    @Transactional
     public int deleteById(Long id) {
-        if (!eventoRepo.existsById(id)) return 1;
-        eventoRepo.deleteById(id);
-        return 0;
-    }
 
-    /**
-     * Actualiza los datos de un evento existente.
-     *
-     * @param id      ID del evento a actualizar
-     * @param newData DTO con los nuevos datos
-     * @return 0 exito, 1 categoria no encontrada, 2 lugar no encontrado, 3 evento no existe
-     */
-    @Override
-    public int updateById(Long id, EventoDTO newData) {
-        Optional<Evento> found = eventoRepo.findById(id);
-        if (found.isEmpty()) return 3;
-
-        Evento entity = found.get();
-
-        // Actualiza categoria si se proporciona
-        if (newData.getCategoriaId() != null) {
-            Optional<Categoria> catFound = categoriaRepo.findById(newData.getCategoriaId());
-            if (catFound.isEmpty()) return 1;
-            entity.setCategoria(catFound.get());
+        if (!eventoRepo.existsById(id)) {
+            return 1;
         }
 
-        // Actualiza lugar si se proporciona (con coordenadas para la ruta)
-        if (newData.getLugar() != null && newData.getLugar().getId() != null) {
-            Optional<Lugar> lugarFound = lugarRepo.findById(newData.getLugar().getId());
-            if (lugarFound.isEmpty()) return 2;
-            entity.setLugar(lugarFound.get());
+        eventoRepo.deleteById(id);
+
+        return 0;
+    }
+
+    // ACTUALIZAR EVENTO
+    @Override
+    @Transactional
+    public int updateById(Long id, EventoDTO newData) {
+
+        Optional<Evento> encontrado =
+                eventoRepo.findById(id);
+
+        if (encontrado.isEmpty()) {
+            return 3;
+        }
+
+        Evento entity = encontrado.get();
+
+        if (newData.getCategoriaId() != null) {
+
+            Optional<Categoria> categoria =
+                    categoriaRepo.findById(
+                            newData.getCategoriaId());
+
+            if (categoria.isEmpty()) {
+                return 1;
+            }
+
+            entity.setCategoria(categoria.get());
+        }
+
+        if (newData.getLugar() != null
+                && newData.getLugar().getId() != null) {
+
+            Optional<Lugar> lugar =
+                    lugarRepo.findById(
+                            newData.getLugar().getId());
+
+            if (lugar.isEmpty()) {
+                return 2;
+            }
+
+            entity.setLugar(lugar.get());
         }
 
         entity.setNombre(newData.getNombre());
@@ -143,176 +165,257 @@ public class EventoService implements CRUDOperation<EventoDTO> {
         entity.setFechaInicio(newData.getFechaInicio());
         entity.setFechaFin(newData.getFechaFin());
         entity.setImagenUrl(newData.getImagenUrl());
-        if (newData.getEstado() != null) entity.setEstado(newData.getEstado());
+
+        if (newData.getEstado() != null) {
+            entity.setEstado(newData.getEstado());
+        }
 
         eventoRepo.save(entity);
+
         return 0;
     }
 
-    /**
-     * Obtiene un evento por su ID con todos sus datos (lugar, categoria, boletas).
-     *
-     * @param id ID del evento
-     * @return EventoDTO completo o null si no existe
-     */
+    // CONSULTAR POR ID
+    @Transactional(readOnly = true)
     public EventoDTO getById(Long id) {
-        Optional<Evento> found = eventoRepo.findById(id);
-        return found.map(this::mapearEvento).orElse(null);
+
+        Optional<Evento> encontrado =
+                eventoRepo.findById(id);
+
+        return encontrado
+                .map(this::mapearEvento)
+                .orElse(null);
     }
 
-    /**
-     * Filtra eventos por categoria.
-     * Usado en el catalogo publico para mostrar solo Teatro, Feria, etc.
-     *
-     * @param categoriaId ID de la categoria
-     * @return Lista de eventos de esa categoria
-     */
+    // FILTROS
+    @Transactional(readOnly = true)
     public List<EventoDTO> getByCategoria(Long categoriaId) {
-        return mapearLista(eventoRepo.findByCategoriaId(categoriaId));
+
+        return mapearLista(
+                eventoRepo.findByCategoriaId(categoriaId));
     }
 
-    /**
-     * Filtra eventos por estado (ACTIVO, PROXIMO, FINALIZADO, CANCELADO).
-     *
-     * @param estado Estado a filtrar
-     * @return Lista de eventos con ese estado
-     */
+    @Transactional(readOnly = true)
     public List<EventoDTO> getByEstado(EstadoEvento estado) {
-        return mapearLista(eventoRepo.findByEstado(estado));
+
+        return mapearLista(
+                eventoRepo.findByEstado(estado));
     }
 
-    /**
-     * Filtra eventos por categoria y estado combinados.
-     * Ejemplo: todos los eventos ACTIVOS de tipo Teatro.
-     *
-     * @param categoriaId ID de la categoria
-     * @param estado      Estado del evento
-     * @return Lista de eventos que cumplen ambos filtros
-     */
-    public List<EventoDTO> getByCategoriaYEstado(Long categoriaId, EstadoEvento estado) {
-        return mapearLista(eventoRepo.findByCategoriaIdAndEstado(categoriaId, estado));
+    @Transactional(readOnly = true)
+    public List<EventoDTO> getByCategoriaYEstado(
+            Long categoriaId, EstadoEvento estado) {
+
+        return mapearLista(
+                eventoRepo.findByCategoriaIdAndEstado(
+                        categoriaId, estado));
     }
 
-    /**
-     * Busca eventos por ciudad del lugar.
-     * El frontend puede usar esto para filtrar por ubicacion.
-     *
-     * @param ciudad Ciudad a buscar
-     * @return Lista de eventos en esa ciudad
-     */
+    @Transactional(readOnly = true)
     public List<EventoDTO> getByCiudad(String ciudad) {
-        return mapearLista(eventoRepo.findByLugarCiudadIgnoreCase(ciudad));
+
+        return mapearLista(
+                eventoRepo.findByLugarCiudadIgnoreCase(ciudad));
     }
 
-    /**
-     * Busca eventos cuyo nombre contenga el texto dado.
-     *
-     * @param nombre Texto a buscar
-     * @return Lista de eventos que coincidan
-     */
+    @Transactional(readOnly = true)
     public List<EventoDTO> buscarPorNombre(String nombre) {
-        return mapearLista(eventoRepo.findByNombreContainingIgnoreCase(nombre));
+
+        return mapearLista(
+                eventoRepo.findByNombreContainingIgnoreCase(nombre));
     }
 
-    /**
-     * Filtra eventos que inician en un rango de fechas.
-     *
-     * @param inicio Fecha inicio del rango
-     * @param fin    Fecha fin del rango
-     * @return Lista de eventos en ese rango
-     */
-    public List<EventoDTO> getByRangoFechas(LocalDateTime inicio, LocalDateTime fin) {
-        return mapearLista(eventoRepo.findByFechaInicioBetween(inicio, fin));
+    @Transactional(readOnly = true)
+    public List<EventoDTO> getByRangoFechas(
+            LocalDateTime inicio, LocalDateTime fin) {
+
+        return mapearLista(
+                eventoRepo.findByFechaInicioBetween(inicio, fin));
     }
 
-    // -----------------------------------------------------------------------
-    // PUNTO DE INTEGRACION CON API EXTERNA
-    // -----------------------------------------------------------------------
+    // SINCRONIZAR EVENTOS EXTERNOS
+    @Transactional
+    public int sincronizarDesdeApiExterna(
+            List<EventoDTO> eventosExternos) {
 
-    /**
-     * Sincroniza eventos desde una API externa.
-     * Este metodo recibe la lista de DTOs que ya se construloo consumiendo la API
-     * y los guarda en la base de datos evitando duplicados.
-     *
-     * 
-     * 1. En la clase de cliente HTTP (EventoApiClient), consume la API externa
-     *    y convierte cada respuesta en un EventoDTO con fuente = EXTERNO e idExterno = id de la API.
-     * 2. Llama a este metodo pasando esa lista.
-     * 3. El metodo verifica con findByIdexterno() si el evento ya existe antes de guardar.
-     *
-     * @param eventosExternos Lista de EventoDTO provenientes de la API externa
-     * @return Numero de eventos nuevos que se guardaron
-     */
-    public int sincronizarDesdeApiExterna(List<EventoDTO> eventosExternos) {
         int nuevos = 0;
 
         for (EventoDTO dto : eventosExternos) {
-            // Evita duplicados: si el idExterno ya existe en BD, lo salta
-            if (dto.getIdexterno() != null
-                    && eventoRepo.findByIdexterno(dto.getIdexterno()).isPresent()) {
+
+            if (dto.getIdexterno() == null
+                    || dto.getIdexterno().isBlank()) {
                 continue;
             }
 
-            // Valida que la categoria exista; si no, la salta
-            if (dto.getCategoriaId() == null) continue;
-            Optional<Categoria> catFound = categoriaRepo.findById(dto.getCategoriaId());
-            if (catFound.isEmpty()) continue;
+            // Si ya existe, actualizar datos externos
+            Optional<Evento> existente =
+                    eventoRepo.findByIdexterno(
+                            dto.getIdexterno());
 
-            // Valida que el lugar exista; si no tiene ID, lo crea en la BD
-            if (dto.getLugar() == null) continue;
+            if (existente.isPresent()) {
+
+                Evento entity = existente.get();
+
+                // No modificar eventos locales
+                if (entity.getFuente() != FuenteEvento.EXTERNO) {
+                    continue;
+                }
+
+                // Solo actualizar precios cuando la API
+                // proporciona informacion valida.
+                if (dto.getMonedaPrecioExterno() != null
+                        && (dto.getPrecioMinimoExterno() != null
+                        || dto.getPrecioMaximoExterno() != null)) {
+
+                    entity.setPrecioMinimoExterno(
+                            dto.getPrecioMinimoExterno());
+
+                    entity.setPrecioMaximoExterno(
+                            dto.getPrecioMaximoExterno());
+
+                    entity.setMonedaPrecioExterno(
+                            dto.getMonedaPrecioExterno());
+                }
+
+                if (dto.getUrlVentaExterna() != null
+                        && !dto.getUrlVentaExterna().isBlank()) {
+
+                    entity.setUrlVentaExterna(
+                            dto.getUrlVentaExterna());
+                }
+
+                eventoRepo.save(entity);
+                continue;
+            }
+
+            // Validar categoria
+            if (dto.getCategoriaId() == null) {
+                continue;
+            }
+
+            Optional<Categoria> categoria =
+                    categoriaRepo.findById(
+                            dto.getCategoriaId());
+
+            if (categoria.isEmpty()) {
+                continue;
+            }
+
+            // Validar lugar
+            if (dto.getLugar() == null) {
+                continue;
+            }
+
             Lugar lugar;
+
             if (dto.getLugar().getId() != null) {
-                Optional<Lugar> lugarFound = lugarRepo.findById(dto.getLugar().getId());
-                if (lugarFound.isEmpty()) continue;
-                lugar = lugarFound.get();
+
+                Optional<Lugar> encontrado =
+                        lugarRepo.findById(
+                                dto.getLugar().getId());
+
+                if (encontrado.isEmpty()) {
+                    continue;
+                }
+
+                lugar = encontrado.get();
+
             } else {
-                // Lugar nuevo traido desde Ticketmaster: lo buscamos por nombre o lo creamos
-                List<Lugar> existentes = lugarRepo.findByNombreContainingIgnoreCase(
-                        dto.getLugar().getNombre() != null ? dto.getLugar().getNombre() : "");
-                if (!existentes.isEmpty()) {
-                    lugar = existentes.get(0);
+
+                String nombreLugar =
+                        dto.getLugar().getNombre();
+
+                if (nombreLugar == null
+                        || nombreLugar.isBlank()) {
+                    continue;
+                }
+
+                List<Lugar> lugares =
+                        lugarRepo.findByNombreContainingIgnoreCase(
+                                nombreLugar);
+
+                if (!lugares.isEmpty()) {
+
+                    lugar = lugares.get(0);
+
                 } else {
+
                     Lugar nuevoLugar = new Lugar();
-                    nuevoLugar.setNombre(dto.getLugar().getNombre() != null ? dto.getLugar().getNombre() : "Sin nombre");
-                    nuevoLugar.setDireccion(dto.getLugar().getDireccion() != null ? dto.getLugar().getDireccion() : "Sin dirección");
-                    nuevoLugar.setCiudad(dto.getLugar().getCiudad() != null ? dto.getLugar().getCiudad() : "Sin ciudad");
-                    nuevoLugar.setLatitud(dto.getLugar().getLatitud() != null ? dto.getLugar().getLatitud() : 0.0);
-                    nuevoLugar.setLongitud(dto.getLugar().getLongitud() != null ? dto.getLugar().getLongitud() : 0.0);
-                    nuevoLugar.setDescripcion("Venue importado desde Ticketmaster");
+
+                    nuevoLugar.setNombre(nombreLugar);
+
+                    nuevoLugar.setDireccion(
+                            dto.getLugar().getDireccion() != null
+                                    ? dto.getLugar().getDireccion()
+                                    : "Sin direccion");
+
+                    nuevoLugar.setCiudad(
+                            dto.getLugar().getCiudad() != null
+                                    ? dto.getLugar().getCiudad()
+                                    : "Sin ciudad");
+
+                    nuevoLugar.setLatitud(
+                            dto.getLugar().getLatitud() != null
+                                    ? dto.getLugar().getLatitud()
+                                    : 0.0);
+
+                    nuevoLugar.setLongitud(
+                            dto.getLugar().getLongitud() != null
+                                    ? dto.getLugar().getLongitud()
+                                    : 0.0);
+
+                    nuevoLugar.setDescripcion(
+                            "Venue importado desde Ticketmaster");
+
                     lugar = lugarRepo.save(nuevoLugar);
                 }
             }
 
-            // Construye y guarda el evento externo
+            // Crear evento externo
             Evento entity = new Evento();
+
             entity.setNombre(dto.getNombre());
             entity.setDescripcion(dto.getDescripcion());
             entity.setFechaInicio(dto.getFechaInicio());
             entity.setFechaFin(dto.getFechaFin());
             entity.setImagenUrl(dto.getImagenUrl());
-            entity.setEstado(dto.getEstado() != null ? dto.getEstado() : EstadoEvento.PROXIMO);
+
+            entity.setEstado(
+                    dto.getEstado() != null
+                            ? dto.getEstado()
+                            : EstadoEvento.PROXIMO);
+
             entity.setFuente(FuenteEvento.EXTERNO);
             entity.setIdexterno(dto.getIdexterno());
-            entity.setCategoria(catFound.get());
+            entity.setCategoria(categoria.get());
             entity.setLugar(lugar);
 
+            // Guardar datos reales de Ticketmaster
+            entity.setPrecioMinimoExterno(
+                    dto.getPrecioMinimoExterno());
+
+            entity.setPrecioMaximoExterno(
+                    dto.getPrecioMaximoExterno());
+
+            entity.setMonedaPrecioExterno(
+                    dto.getMonedaPrecioExterno());
+
+            entity.setUrlVentaExterna(
+                    dto.getUrlVentaExterna());
+
             eventoRepo.save(entity);
+
             nuevos++;
         }
 
         return nuevos;
     }
-    // Metodos privados de mapeo
 
-    /**
-     * Convierte una entidad Evento a EventoDTO incluyendo lugar (con coordenadas)
-     * y tipos de boleta.
-     *
-     * @param evento Entidad a convertir
-     * @return EventoDTO con todos los datos necesarios para el frontend
-     */
+    // CONVERTIR ENTIDAD A DTO
     private EventoDTO mapearEvento(Evento evento) {
+
         EventoDTO dto = new EventoDTO();
+
         dto.setId(evento.getId());
         dto.setNombre(evento.getNombre());
         dto.setDescripcion(evento.getDescripcion());
@@ -323,47 +426,78 @@ public class EventoService implements CRUDOperation<EventoDTO> {
         dto.setFuente(evento.getFuente());
         dto.setIdexterno(evento.getIdexterno());
 
-        // Mapea categoria
+        // Informacion externa
+        dto.setPrecioMinimoExterno(
+                evento.getPrecioMinimoExterno());
+
+        dto.setPrecioMaximoExterno(
+                evento.getPrecioMaximoExterno());
+
+        dto.setMonedaPrecioExterno(
+                evento.getMonedaPrecioExterno());
+
+        dto.setUrlVentaExterna(
+                evento.getUrlVentaExterna());
+
+        // Categoria
         if (evento.getCategoria() != null) {
-            dto.setCategoriaId(evento.getCategoria().getId());
-            dto.setCategoriaNombre(evento.getCategoria().getNombre());
+
+            dto.setCategoriaId(
+                    evento.getCategoria().getId());
+
+            dto.setCategoriaNombre(
+                    evento.getCategoria().getNombre());
         }
 
-        // Mapea lugar con latitud y longitud para que el frontend genere la ruta
+        // Lugar
         if (evento.getLugar() != null) {
+
             Lugar l = evento.getLugar();
+
             LugarDTO lugarDTO = new LugarDTO(
-                l.getId(), l.getNombre(), l.getDireccion(), l.getCiudad(),
-                l.getLatitud(), l.getLongitud(), l.getDescripcion()
-            );
+                    l.getId(),
+                    l.getNombre(),
+                    l.getDireccion(),
+                    l.getCiudad(),
+                    l.getLatitud(),
+                    l.getLongitud(),
+                    l.getDescripcion());
+
             dto.setLugar(lugarDTO);
         }
 
-        // Mapea tipos de boleta
-        if (evento.getTiposBoleta() != null && !evento.getTiposBoleta().isEmpty()) {
-            List<TipoBoletaDTO> boletas = new ArrayList<>();
-            evento.getTiposBoleta().forEach(tb -> {
+        // Tipos de boleta registrados en MySQL
+        List<TipoBoletaDTO> boletas = new ArrayList<>();
+
+        if (evento.getTiposBoleta() != null) {
+
+            for (TipoBoleta tb : evento.getTiposBoleta()) {
+
                 TipoBoletaDTO tbDto = new TipoBoletaDTO(
-                    tb.getId(), tb.getNombre(), tb.getPrecio(),
-                    tb.getCantidadDisponible(), tb.getDescripcion(), evento.getId()
-                );
+                        tb.getId(),
+                        tb.getNombre(),
+                        tb.getPrecio(),
+                        tb.getCantidadDisponible(),
+                        tb.getDescripcion(),
+                        evento.getId());
+
                 boletas.add(tbDto);
-            });
-            dto.setTiposBoleta(boletas);
+            }
         }
+
+        dto.setTiposBoleta(boletas);
 
         return dto;
     }
 
-    /**
-     * Convierte una lista de entidades Evento a lista de EventoDTO.
-     *
-     * @param lista Lista de entidades
-     * @return Lista de DTOs
-     */
     private List<EventoDTO> mapearLista(List<Evento> lista) {
-        List<EventoDTO> dtos = new ArrayList<>();
-        lista.forEach(e -> dtos.add(mapearEvento(e)));
-        return dtos;
+
+        List<EventoDTO> resultado = new ArrayList<>();
+
+        for (Evento evento : lista) {
+            resultado.add(mapearEvento(evento));
+        }
+
+        return resultado;
     }
 }

@@ -375,6 +375,15 @@ public class EventoService implements CRUDOperation<EventoDTO> {
                 }
             }
 
+            // Validar categoria
+            if (dto.getCategoriaId() == null) {
+                continue;
+            }
+            Optional<Categoria> catFound = categoriaRepo.findById(dto.getCategoriaId());
+            if (catFound.isEmpty()) {
+                continue;
+            }
+
             // Crear evento externo
             Evento entity = new Evento();
 
@@ -397,19 +406,6 @@ public class EventoService implements CRUDOperation<EventoDTO> {
             entity.setMonedaPrecioExterno(dto.getMonedaPrecioExterno());
             entity.setCategoria(catFound.get());
             entity.setLugar(lugar);
-
-            // Guardar datos reales de Ticketmaster
-            entity.setPrecioMinimoExterno(
-                    dto.getPrecioMinimoExterno());
-
-            entity.setPrecioMaximoExterno(
-                    dto.getPrecioMaximoExterno());
-
-            entity.setMonedaPrecioExterno(
-                    dto.getMonedaPrecioExterno());
-
-            entity.setUrlVentaExterna(
-                    dto.getUrlVentaExterna());
 
             eventoRepo.save(entity);
 
@@ -437,19 +433,6 @@ public class EventoService implements CRUDOperation<EventoDTO> {
         dto.setPrecioMinimoExterno(evento.getPrecioMinimoExterno());
         dto.setPrecioMaximoExterno(evento.getPrecioMaximoExterno());
         dto.setMonedaPrecioExterno(evento.getMonedaPrecioExterno());
-
-        // Informacion externa
-        dto.setPrecioMinimoExterno(
-                evento.getPrecioMinimoExterno());
-
-        dto.setPrecioMaximoExterno(
-                evento.getPrecioMaximoExterno());
-
-        dto.setMonedaPrecioExterno(
-                evento.getMonedaPrecioExterno());
-
-        dto.setUrlVentaExterna(
-                evento.getUrlVentaExterna());
 
         // Categoria
         if (evento.getCategoria() != null) {

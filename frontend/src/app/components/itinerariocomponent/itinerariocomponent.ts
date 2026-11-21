@@ -18,6 +18,7 @@ export class ItinerarioComponent implements OnInit {
 
   itinerarios: ItinerarioDTO[] = [];
   cargando = false;
+  descargandoPdfId: number | null = null;
   error = '';
 
   constructor(
@@ -97,6 +98,35 @@ export class ItinerarioComponent implements OnInit {
       },
       error: (err) => {
         this.error = obtenerMensajeError(err, 'No se pudo agregar el evento al itinerario.');
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  descargarPdf(itinerario: ItinerarioDTO): void {
+    this.error = '';
+    this.descargandoPdfId = itinerario.id;
+
+    this.itinerarioService.descargarPdf(itinerario.id).pipe(
+      timeout(30_000),
+      finalize(() => {
+        this.descargandoPdfId = null;
+        if (!this.destroyRef.destroyed) this.cdr.detectChanges();
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (pdf) => {
+        const url = URL.createObjectURL(pdf);
+        const enlace = document.createElement('a');
+        enlace.href = url;
+        enlace.download = `itinerario-${itinerario.id}.pdf`;
+        document.body.appendChild(enlace);
+        enlace.click();
+        enlace.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      },
+      error: (err: unknown) => {
+        this.error = obtenerMensajeError(err, 'No se pudo descargar el PDF del itinerario.');
         this.cdr.detectChanges();
       }
     });

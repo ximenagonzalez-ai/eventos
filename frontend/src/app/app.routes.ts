@@ -12,6 +12,8 @@ import { OlvidePasswordComponent } from './components/olvidepasswordcomponent/ol
 import { RestablecerPasswordComponent } from './components/restablecerpasswordcomponent/restablecerpasswordcomponent';
 import { PerfilComponent } from './components/perfilcomponent/perfilcomponent';
 import { AyudaComponent } from './components/ayudacomponent/ayudacomponent';
+import { AdministracionComponent } from './components/administracioncomponent/administracioncomponent';
+import { adminGuard, authGuard } from './guards/role.guards';
 
 export const routes: Routes = [
   { path: '', component: CatalogoComponent },
@@ -21,12 +23,13 @@ export const routes: Routes = [
   { path: 'registro', component: RegistroComponent },
   { path: 'verificacion', component: VerificacionComponent },
   { path: 'verificar-email', component: VerificacionComponent },
-  { path: 'mis-boletas', component: MiBoletaComponent },
-  { path: 'itinerario', component: ItinerarioComponent },
-  { path: 'auditoria', component: AuditoriaComponent },
+  { path: 'mis-boletas', component: MiBoletaComponent, canActivate: [authGuard] },
+  { path: 'itinerario', component: ItinerarioComponent, canActivate: [authGuard] },
+  { path: 'auditoria', component: AuditoriaComponent, canActivate: [adminGuard] },
+  { path: 'administracion', component: AdministracionComponent, canActivate: [adminGuard] },
   { path: 'olvide-password', component: OlvidePasswordComponent },
   { path: 'restablecer-password', component: RestablecerPasswordComponent },
-  { path: 'perfil', component: PerfilComponent },
+  { path: 'perfil', component: PerfilComponent, canActivate: [authGuard] },
   { path: 'ayuda', component: AyudaComponent },
   { path: '**', redirectTo: '' },
 ];

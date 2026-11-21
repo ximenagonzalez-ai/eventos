@@ -58,14 +58,6 @@
           required>
       </div>
 
-      <div class="form-group">
-        <label for="rol">Tipo de Cuenta</label>
-        <select id="rol" name="rol" [(ngModel)]="userData.rol" class="select-input">
-          <option value="USER">Usuario (Comprar Boletos)</option>
-          <option value="ADMIN">Administrador (Crear y Gestionar Eventos)</option>
-        </select>
-      </div>
-
       <button type="submit" class="btn-submit" [disabled]="isLoading">
         {{ isLoading ? 'Registrando...' : 'Registrarse' }}
       </button>

@@ -21,6 +21,7 @@ import { CatalogoComponent } from './components/catalogocomponent/catalogocompon
 import { EventoDetalleComponent } from './components/eventodetallecomponent/eventodetallecomponent';
 import { RutaComponent } from './components/rutacomponent/rutacomponent';
 import { AyudaComponent } from './components/ayudacomponent/ayudacomponent';
+import { AdministracionComponent } from './components/administracioncomponent/administracioncomponent';
 import { routes } from './app.routes';
 import { AuthInterceptor } from './interceptors/authinterceptor';
 
@@ -42,6 +43,7 @@ import { AuthInterceptor } from './interceptors/authinterceptor';
     EventoDetalleComponent,
     RutaComponent,
     AyudaComponent,
+    AdministracionComponent,
   ],
   imports: [
     BrowserModule,

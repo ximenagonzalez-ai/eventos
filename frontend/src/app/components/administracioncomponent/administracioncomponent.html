@@ -1,0 +1,76 @@
+<section class="admin-page">
+  <header class="admin-header">
+    <div>
+      <h1>Administración</h1>
+      <p class="subtitulo">Gestiona las categorías que clasifican los eventos del catálogo.</p>
+    </div>
+    <a routerLink="/" class="btn-secondary">Volver al catálogo</a>
+  </header>
+
+  <p *ngIf="mensaje" class="msg-success" role="status">{{ mensaje }}</p>
+  <p *ngIf="error" class="msg-error" role="alert">{{ error }}</p>
+
+  <section class="panel-card">
+    <h2>{{ categoriaEditandoId === null ? 'Crear tipo de evento' : 'Editar tipo de evento' }}</h2>
+    <form class="categoria-form" (ngSubmit)="guardarCategoria()">
+      <label>
+        Nombre
+        <input
+          type="text"
+          name="nombre"
+          [(ngModel)]="nombre"
+          maxlength="100"
+          required>
+      </label>
+
+      <label>
+        Descripción (opcional)
+        <textarea
+          name="descripcion"
+          [(ngModel)]="descripcion"
+          maxlength="255"
+          rows="3"></textarea>
+      </label>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" [disabled]="guardando">
+          {{ guardando ? 'Guardando...' : (categoriaEditandoId === null ? 'Crear tipo' : 'Guardar cambios') }}
+        </button>
+        <button
+          *ngIf="categoriaEditandoId !== null"
+          type="button"
+          class="btn-secondary"
+          [disabled]="guardando"
+          (click)="cancelarEdicion()">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel-card">
+    <div class="panel-heading">
+      <h2>Tipos de evento existentes</h2>
+      <button type="button" class="btn-secondary" [disabled]="cargando" (click)="cargarCategorias()">
+        Actualizar
+      </button>
+    </div>
+
+    <p *ngIf="cargando" class="msg-info" role="status">Cargando tipos de evento...</p>
+    <p *ngIf="!cargando && categorias.length === 0" class="msg-info">
+      Todavía no hay tipos de evento creados.
+    </p>
+
+    <ul *ngIf="!cargando && categorias.length > 0" class="categoria-lista">
+      <li *ngFor="let categoria of categorias">
+        <div>
+          <h3>{{ categoria.nombre }}</h3>
+          <p>{{ categoria.descripcion || 'Sin descripción.' }}</p>
+        </div>
+        <button type="button" class="btn-secondary" (click)="editarCategoria(categoria)">
+          Editar
+        </button>
+      </li>
+    </ul>
+  </section>
+</section>

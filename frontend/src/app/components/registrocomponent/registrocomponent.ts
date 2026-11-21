@@ -16,8 +16,7 @@ export class RegistroComponent {
   userData = {
     nombreCompleto: '',
     email: '',
-    password: '',
-    rol: 'USER'
+    password: ''
   };
   confirmPassword: string = '';
   errorMessage: string = '';
@@ -71,8 +70,7 @@ export class RegistroComponent {
         this.userData = {
           nombreCompleto: '',
           email: '',
-          password: '',
-          rol: 'USER'
+          password: ''
         };
         this.confirmPassword = '';
         this.cdr.detectChanges();

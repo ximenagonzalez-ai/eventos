@@ -13,6 +13,7 @@ import { RestablecerPasswordComponent } from './components/restablecerpasswordco
 import { PerfilComponent } from './components/perfilcomponent/perfilcomponent';
 import { AyudaComponent } from './components/ayudacomponent/ayudacomponent';
 import { AdministracionComponent } from './components/administracioncomponent/administracioncomponent';
+import { AjustesComponent } from './components/ajustescomponent/ajustescomponent';
 import { adminGuard, authGuard } from './guards/role.guards';
 
 export const routes: Routes = [
@@ -30,6 +31,7 @@ export const routes: Routes = [
   { path: 'olvide-password', component: OlvidePasswordComponent },
   { path: 'restablecer-password', component: RestablecerPasswordComponent },
   { path: 'perfil', component: PerfilComponent, canActivate: [authGuard] },
+  { path: 'configuracion', component: AjustesComponent, canActivate: [authGuard] },
   { path: 'ayuda', component: AyudaComponent },
   { path: '**', redirectTo: '' },
 ];

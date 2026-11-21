@@ -1,0 +1,151 @@
+<div class="ajustes-container">
+
+  <!-- Encabezado -->
+  <div class="ajustes-header">
+    <h2>Ajustes</h2>
+    <p class="subtitle">Personaliza tu cuenta y tus preferencias en VibePass.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       SECCIÓN 1 · Cambiar contraseña
+  ══════════════════════════════════════════════════ -->
+  <section class="ajustes-card">
+    <div class="card-header">
+      <span class="card-icon">🔒</span>
+      <div>
+        <h3>Seguridad</h3>
+        <p class="card-desc">Actualiza tu contraseña para mantener tu cuenta segura.</p>
+      </div>
+    </div>
+
+    <p *ngIf="mensajeContrasena" class="alert-success">{{ mensajeContrasena }}</p>
+    <p *ngIf="errorContrasena"   class="alert-error">{{ errorContrasena }}</p>
+
+    <div class="form-group">
+      <label>Contraseña actual</label>
+      <input
+        [type]="mostrarContrasenas ? 'text' : 'password'"
+        [(ngModel)]="contrasenaActual"
+        placeholder="••••••••"
+        class="input-field"
+        autocomplete="current-password" />
+    </div>
+
+    <div class="form-group">
+      <label>Nueva contraseña</label>
+      <input
+        [type]="mostrarContrasenas ? 'text' : 'password'"
+        [(ngModel)]="nuevaContrasena"
+        placeholder="Mínimo 8 caracteres"
+        class="input-field"
+        autocomplete="new-password" />
+    </div>
+
+    <div class="form-group">
+      <label>Confirmar nueva contraseña</label>
+      <input
+        [type]="mostrarContrasenas ? 'text' : 'password'"
+        [(ngModel)]="confirmarContrasena"
+        placeholder="Repite la nueva contraseña"
+        class="input-field"
+        autocomplete="new-password" />
+    </div>
+
+    <div class="form-row">
+      <label class="toggle-label">
+        <input type="checkbox" [(ngModel)]="mostrarContrasenas" />
+        Mostrar contraseñas
+      </label>
+    </div>
+
+    <div class="card-actions">
+      <button class="btn-primary" (click)="cambiarContrasena()" [disabled]="guardandoContrasena">
+        {{ guardandoContrasena ? 'Enviando...' : 'Cambiar contraseña' }}
+      </button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       SECCIÓN 2 · Notificaciones
+  ══════════════════════════════════════════════════ -->
+  <section class="ajustes-card">
+    <div class="card-header">
+      <span class="card-icon">🔔</span>
+      <div>
+        <h3>Notificaciones</h3>
+        <p class="card-desc">Elige qué correos quieres recibir de VibePass.</p>
+      </div>
+    </div>
+
+    <p *ngIf="mensajeNotif" class="alert-success">{{ mensajeNotif }}</p>
+
+    <ul class="toggle-list">
+      <li>
+        <div class="toggle-info">
+          <span class="toggle-title">Eventos nuevos</span>
+          <span class="toggle-desc">Te avisamos cuando haya eventos en tu ciudad.</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="notifEventosNuevos" />
+          <span class="slider"></span>
+        </label>
+      </li>
+      <li>
+        <div class="toggle-info">
+          <span class="toggle-title">Recordatorios</span>
+          <span class="toggle-desc">Recordatorio 24 h antes de cada evento en tu itinerario.</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="notifRecordatorios" />
+          <span class="slider"></span>
+        </label>
+      </li>
+      <li>
+        <div class="toggle-info">
+          <span class="toggle-title">Actualizaciones de cuenta</span>
+          <span class="toggle-desc">Cambios de contraseña, inicio de sesión en dispositivo nuevo.</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="notifActualizaciones" />
+          <span class="slider"></span>
+        </label>
+      </li>
+    </ul>
+
+    <div class="card-actions">
+      <button class="btn-primary" (click)="guardarNotificaciones()" [disabled]="guardandoNotif">
+        {{ guardandoNotif ? 'Guardando...' : 'Guardar preferencias' }}
+      </button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════
+       SECCIÓN 3 · Apariencia
+  ══════════════════════════════════════════════════ -->
+  <section class="ajustes-card">
+    <div class="card-header">
+      <span class="card-icon">🎨</span>
+      <div>
+        <h3>Apariencia</h3>
+        <p class="card-desc">Personaliza cómo se ve VibePass para ti.</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Tema</label>
+      <div class="theme-grid">
+        <button
+          *ngFor="let tema of temas"
+          class="theme-btn"
+          [class.active]="temaSeleccionado === tema.id"
+          [attr.data-theme-preview]="tema.id"
+          (click)="seleccionarTema(tema.id)">
+          <span class="theme-dot" [attr.data-theme-preview]="tema.id"></span>
+          {{ tema.emoji }} {{ tema.etiqueta }}
+          <span *ngIf="temaSeleccionado === tema.id" class="theme-check">✓</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>

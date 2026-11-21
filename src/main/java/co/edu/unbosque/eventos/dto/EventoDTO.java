@@ -19,13 +19,10 @@ public class EventoDTO {
     private FuenteEvento fuente;
     private String idexterno;
 
-    private String urlVentaExterna;
-
     private Double precioMinimoExterno;
-
     private Double precioMaximoExterno;
-
     private String monedaPrecioExterno;
+    private String urlVentaExterna;
 
     /**
      * ID de la categoria a la que pertenece el evento.
@@ -35,12 +32,6 @@ public class EventoDTO {
     private String categoriaNombre;
     private LugarDTO lugar;
     private List<TipoBoletaDTO> tiposBoleta;
-
-    // Información externa de Ticketmaster
-    private Double precioMinimoExterno;
-    private Double precioMaximoExterno;
-    private String monedaPrecioExterno;
-    private String urlVentaExterna;
 
     public EventoDTO() {}
 
@@ -68,92 +59,44 @@ public class EventoDTO {
         this.categoriaNombre = categoriaNombre;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getNombre() {
-        return nombre;
-    }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public LocalDateTime getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDateTime fechaInicio) { this.fechaInicio = fechaInicio; }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+    public LocalDateTime getFechaFin() { return fechaFin; }
+    public void setFechaFin(LocalDateTime fechaFin) { this.fechaFin = fechaFin; }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
+    public String getImagenUrl() { return imagenUrl; }
+    public void setImagenUrl(String imagenUrl) { this.imagenUrl = imagenUrl; }
 
-    public LocalDateTime getFechaInicio() {
-        return fechaInicio;
-    }
+    public EstadoEvento getEstado() { return estado; }
+    public void setEstado(EstadoEvento estado) { this.estado = estado; }
 
-    public void setFechaInicio(LocalDateTime fechaInicio) {
-        this.fechaInicio = fechaInicio;
-    }
+    public FuenteEvento getFuente() { return fuente; }
+    public void setFuente(FuenteEvento fuente) { this.fuente = fuente; }
 
-    public LocalDateTime getFechaFin() {
-        return fechaFin;
-    }
+    public String getIdexterno() { return idexterno; }
+    public void setIdexterno(String idexterno) { this.idexterno = idexterno; }
 
-    public void setFechaFin(LocalDateTime fechaFin) {
-        this.fechaFin = fechaFin;
-    }
+    public Long getCategoriaId() { return categoriaId; }
+    public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }
 
-    public String getImagenUrl() {
-        return imagenUrl;
-    }
+    public String getCategoriaNombre() { return categoriaNombre; }
+    public void setCategoriaNombre(String categoriaNombre) { this.categoriaNombre = categoriaNombre; }
 
-    public void setImagenUrl(String imagenUrl) {
-        this.imagenUrl = imagenUrl;
-    }
+    public LugarDTO getLugar() { return lugar; }
+    public void setLugar(LugarDTO lugar) { this.lugar = lugar; }
 
-    public EstadoEvento getEstado() {
-        return estado;
-    }
-
-    public void setEstado(EstadoEvento estado) {
-        this.estado = estado;
-    }
-
-    public FuenteEvento getFuente() {
-        return fuente;
-    }
-
-    public void setFuente(FuenteEvento fuente) {
-        this.fuente = fuente;
-    }
-
-    public String getIdexterno() {
-        return idexterno;
-    }
-
-    public void setIdexterno(String idexterno) {
-        this.idexterno = idexterno;
-    }
-
-    public Long getCategoriaId() {
-        return categoriaId;
-    }
-
-    public void setCategoriaId(Long categoriaId) {
-        this.categoriaId = categoriaId;
-    }
-
-    public String getCategoriaNombre() {
-        return categoriaNombre;
-    }
-
-    public String getUrlVentaExterna() { return urlVentaExterna; }
-    public void setUrlVentaExterna(String urlVentaExterna) { this.urlVentaExterna = urlVentaExterna; }
+    public List<TipoBoletaDTO> getTiposBoleta() { return tiposBoleta; }
+    public void setTiposBoleta(List<TipoBoletaDTO> tiposBoleta) { this.tiposBoleta = tiposBoleta; }
 
     public Double getPrecioMinimoExterno() { return precioMinimoExterno; }
     public void setPrecioMinimoExterno(Double precioMinimoExterno) { this.precioMinimoExterno = precioMinimoExterno; }
@@ -164,56 +107,8 @@ public class EventoDTO {
     public String getMonedaPrecioExterno() { return monedaPrecioExterno; }
     public void setMonedaPrecioExterno(String monedaPrecioExterno) { this.monedaPrecioExterno = monedaPrecioExterno; }
 
-    public Long getCategoriaId() { return categoriaId; }
-    public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }
-
-    public LugarDTO getLugar() {
-        return lugar;
-    }
-
-    public void setLugar(LugarDTO lugar) {
-        this.lugar = lugar;
-    }
-
-    public List<TipoBoletaDTO> getTiposBoleta() {
-        return tiposBoleta;
-    }
-
-    public void setTiposBoleta(List<TipoBoletaDTO> tiposBoleta) {
-        this.tiposBoleta = tiposBoleta;
-    }
-
-    public Double getPrecioMinimoExterno() {
-        return precioMinimoExterno;
-    }
-
-    public void setPrecioMinimoExterno(Double precioMinimoExterno) {
-        this.precioMinimoExterno = precioMinimoExterno;
-    }
-
-    public Double getPrecioMaximoExterno() {
-        return precioMaximoExterno;
-    }
-
-    public void setPrecioMaximoExterno(Double precioMaximoExterno) {
-        this.precioMaximoExterno = precioMaximoExterno;
-    }
-
-    public String getMonedaPrecioExterno() {
-        return monedaPrecioExterno;
-    }
-
-    public void setMonedaPrecioExterno(String monedaPrecioExterno) {
-        this.monedaPrecioExterno = monedaPrecioExterno;
-    }
-
-    public String getUrlVentaExterna() {
-        return urlVentaExterna;
-    }
-
-    public void setUrlVentaExterna(String urlVentaExterna) {
-        this.urlVentaExterna = urlVentaExterna;
-    }
+    public String getUrlVentaExterna() { return urlVentaExterna; }
+    public void setUrlVentaExterna(String urlVentaExterna) { this.urlVentaExterna = urlVentaExterna; }
 
     @Override
     public int hashCode() {
@@ -224,7 +119,6 @@ public class EventoDTO {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof EventoDTO other)) return false;
-
         return Objects.equals(id, other.id)
                 && Objects.equals(nombre, other.nombre);
     }

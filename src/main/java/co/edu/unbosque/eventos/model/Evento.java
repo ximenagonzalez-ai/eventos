@@ -39,13 +39,14 @@ public class Evento {
     @Column(unique = true)
     private String idexterno;
 
-    private String urlVentaExterna;
-
     private Double precioMinimoExterno;
-
     private Double precioMaximoExterno;
 
+    @Column(length = 10)
     private String monedaPrecioExterno;
+
+    @Column(length = 2048)
+    private String urlVentaExterna;
 
     /**
      * Categoria del evento (Teatro, Feria, Concierto, etc.).
@@ -66,16 +67,6 @@ public class Evento {
         orphanRemoval = true
     )
     private List<TipoBoleta> tiposBoleta;
-
-    // Precios externos informativos de Ticketmaster
-    private Double precioMinimoExterno;
-    private Double precioMaximoExterno;
-
-    @Column(length = 10)
-    private String monedaPrecioExterno;
-
-    @Column(length = 2048)
-    private String urlVentaExterna;
 
     public Evento() {}
 
@@ -139,17 +130,17 @@ public class Evento {
     public String getIdexterno() { return idexterno; }
     public void setIdexterno(String v) { idexterno = v; }
 
-    public String getUrlVentaExterna() { return urlVentaExterna; }
-    public void setUrlVentaExterna(String urlVentaExterna) { this.urlVentaExterna = urlVentaExterna; }
-
     public Double getPrecioMinimoExterno() { return precioMinimoExterno; }
-    public void setPrecioMinimoExterno(Double precioMinimoExterno) { this.precioMinimoExterno = precioMinimoExterno; }
+    public void setPrecioMinimoExterno(Double v) { precioMinimoExterno = v; }
 
     public Double getPrecioMaximoExterno() { return precioMaximoExterno; }
-    public void setPrecioMaximoExterno(Double precioMaximoExterno) { this.precioMaximoExterno = precioMaximoExterno; }
+    public void setPrecioMaximoExterno(Double v) { precioMaximoExterno = v; }
 
     public String getMonedaPrecioExterno() { return monedaPrecioExterno; }
-    public void setMonedaPrecioExterno(String monedaPrecioExterno) { this.monedaPrecioExterno = monedaPrecioExterno; }
+    public void setMonedaPrecioExterno(String v) { monedaPrecioExterno = v; }
+
+    public String getUrlVentaExterna() { return urlVentaExterna; }
+    public void setUrlVentaExterna(String v) { urlVentaExterna = v; }
 
     public Categoria getCategoria() { return categoria; }
     public void setCategoria(Categoria v) { categoria = v; }
@@ -157,45 +148,8 @@ public class Evento {
     public Lugar getLugar() { return lugar; }
     public void setLugar(Lugar v) { lugar = v; }
 
-    public List<TipoBoleta> getTiposBoleta() {
-        return tiposBoleta;
-    }
-
-    public void setTiposBoleta(List<TipoBoleta> v) {
-        tiposBoleta = v;
-    }
-
-    public Double getPrecioMinimoExterno() {
-        return precioMinimoExterno;
-    }
-
-    public void setPrecioMinimoExterno(Double v) {
-        precioMinimoExterno = v;
-    }
-
-    public Double getPrecioMaximoExterno() {
-        return precioMaximoExterno;
-    }
-
-    public void setPrecioMaximoExterno(Double v) {
-        precioMaximoExterno = v;
-    }
-
-    public String getMonedaPrecioExterno() {
-        return monedaPrecioExterno;
-    }
-
-    public void setMonedaPrecioExterno(String v) {
-        monedaPrecioExterno = v;
-    }
-
-    public String getUrlVentaExterna() {
-        return urlVentaExterna;
-    }
-
-    public void setUrlVentaExterna(String v) {
-        urlVentaExterna = v;
-    }
+    public List<TipoBoleta> getTiposBoleta() { return tiposBoleta; }
+    public void setTiposBoleta(List<TipoBoleta> v) { tiposBoleta = v; }
 
     @Override
     public int hashCode() {
@@ -206,7 +160,6 @@ public class Evento {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Evento other)) return false;
-
         return Objects.equals(id, other.id)
             && Objects.equals(nombre, other.nombre);
     }

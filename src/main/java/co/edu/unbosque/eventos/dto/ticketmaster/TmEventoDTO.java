@@ -43,6 +43,9 @@ public class TmEventoDTO {
     /** URL del evento en el sitio de Ticketmaster (opcional, informativo). */
     private String url;
 
+    /** Ticketmaster price ranges, when available. */
+    private List<TmPriceRangeDTO> priceRanges;
+
     /**
      * Lista de imagenes del evento.
      * Ticketmaster devuelve varias en distintos tamaños.
@@ -77,6 +80,9 @@ public class TmEventoDTO {
 
     public String getUrl() { return url; }
     public void setUrl(String url) { this.url = url; }
+
+    public List<TmPriceRangeDTO> getPriceRanges() { return priceRanges; }
+    public void setPriceRanges(List<TmPriceRangeDTO> priceRanges) { this.priceRanges = priceRanges; }
 
     public List<TmImageDTO> getImages() { return images; }
     public void setImages(List<TmImageDTO> images) { this.images = images; }

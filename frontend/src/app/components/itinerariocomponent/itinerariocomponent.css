@@ -150,3 +150,61 @@
 .msg-info {
   color: var(--text-muted, #cbd5e1);
 }
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .itinerario-page {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .itinerarios-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .itinerario-page {
+    margin-top: 24px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .itinerario-header {
+    align-items: stretch;
+  }
+
+  .itinerario-header h1 {
+    font-size: 1.55rem;
+  }
+
+  .crear-form,
+  .agregar-evento-row {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .crear-form input,
+  .agregar-evento-row input,
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+  }
+
+  .itinerarios-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .itinerario-card,
+  .empty-card {
+    min-width: 0;
+    padding: 16px;
+  }
+
+  .card-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

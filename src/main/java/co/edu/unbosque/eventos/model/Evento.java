@@ -81,6 +81,14 @@ public class Evento {
     @Column(unique = true)
     private String idexterno;
 
+    private String urlVentaExterna;
+
+    private Double precioMinimoExterno;
+
+    private Double precioMaximoExterno;
+
+    private String monedaPrecioExterno;
+
     /**
      * Categoria del evento (Teatro, Feria, Concierto, etc.).
      * Relacion ManyToOne: varios eventos pueden tener la misma categoria.
@@ -186,6 +194,18 @@ public class Evento {
 
     public String getIdexterno() { return idexterno; }
     public void setIdexterno(String idexterno) { this.idexterno = idexterno; }
+
+    public String getUrlVentaExterna() { return urlVentaExterna; }
+    public void setUrlVentaExterna(String urlVentaExterna) { this.urlVentaExterna = urlVentaExterna; }
+
+    public Double getPrecioMinimoExterno() { return precioMinimoExterno; }
+    public void setPrecioMinimoExterno(Double precioMinimoExterno) { this.precioMinimoExterno = precioMinimoExterno; }
+
+    public Double getPrecioMaximoExterno() { return precioMaximoExterno; }
+    public void setPrecioMaximoExterno(Double precioMaximoExterno) { this.precioMaximoExterno = precioMaximoExterno; }
+
+    public String getMonedaPrecioExterno() { return monedaPrecioExterno; }
+    public void setMonedaPrecioExterno(String monedaPrecioExterno) { this.monedaPrecioExterno = monedaPrecioExterno; }
 
     public Categoria getCategoria() { return categoria; }
     public void setCategoria(Categoria categoria) { this.categoria = categoria; }

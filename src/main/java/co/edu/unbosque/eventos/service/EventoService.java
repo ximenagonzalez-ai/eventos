@@ -260,10 +260,26 @@ public class EventoService implements CRUDOperation<EventoDTO> {
         int nuevos = 0;
 
         for (EventoDTO dto : eventosExternos) {
-            // Evita duplicados: si el idExterno ya existe en BD, lo salta
-            if (dto.getIdexterno() != null
-                    && eventoRepo.findByIdexterno(dto.getIdexterno()).isPresent()) {
-                continue;
+            // Actualiza la información externa de eventos ya sincronizados.
+            if (dto.getIdexterno() != null) {
+                Optional<Evento> existente = eventoRepo.findByIdexterno(dto.getIdexterno());
+                if (existente.isPresent()) {
+                    Evento entity = existente.get();
+                    if (dto.getUrlVentaExterna() != null) {
+                        entity.setUrlVentaExterna(dto.getUrlVentaExterna());
+                    }
+                    if (dto.getPrecioMinimoExterno() != null) {
+                        entity.setPrecioMinimoExterno(dto.getPrecioMinimoExterno());
+                    }
+                    if (dto.getPrecioMaximoExterno() != null) {
+                        entity.setPrecioMaximoExterno(dto.getPrecioMaximoExterno());
+                    }
+                    if (dto.getMonedaPrecioExterno() != null) {
+                        entity.setMonedaPrecioExterno(dto.getMonedaPrecioExterno());
+                    }
+                    eventoRepo.save(entity);
+                    continue;
+                }
             }
 
             // Valida que la categoria exista; si no, la salta
@@ -306,6 +322,10 @@ public class EventoService implements CRUDOperation<EventoDTO> {
             entity.setEstado(dto.getEstado() != null ? dto.getEstado() : EstadoEvento.PROXIMO);
             entity.setFuente(FuenteEvento.EXTERNO);
             entity.setIdexterno(dto.getIdexterno());
+            entity.setUrlVentaExterna(dto.getUrlVentaExterna());
+            entity.setPrecioMinimoExterno(dto.getPrecioMinimoExterno());
+            entity.setPrecioMaximoExterno(dto.getPrecioMaximoExterno());
+            entity.setMonedaPrecioExterno(dto.getMonedaPrecioExterno());
             entity.setCategoria(catFound.get());
             entity.setLugar(lugar);
 
@@ -335,6 +355,10 @@ public class EventoService implements CRUDOperation<EventoDTO> {
         dto.setEstado(evento.getEstado());
         dto.setFuente(evento.getFuente());
         dto.setIdexterno(evento.getIdexterno());
+        dto.setUrlVentaExterna(evento.getUrlVentaExterna());
+        dto.setPrecioMinimoExterno(evento.getPrecioMinimoExterno());
+        dto.setPrecioMaximoExterno(evento.getPrecioMaximoExterno());
+        dto.setMonedaPrecioExterno(evento.getMonedaPrecioExterno());
 
         // Mapea categoria
         if (evento.getCategoria() != null) {

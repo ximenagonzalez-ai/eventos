@@ -110,6 +110,28 @@
   padding: 24px;
 }
 
+.precio-externo {
+  color: #a78bfa;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 14px;
+}
+
+.btn-boleta-externa {
+  display: inline-block;
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  padding: 9px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.btn-boleta-externa:hover {
+  background: rgba(139, 92, 246, 0.32);
+}
+
 .ticket-tier {
   display: flex;
   justify-content: space-between;
@@ -187,4 +209,108 @@
 .msg-ok {
   margin-top: 12px;
   color: #34d399;
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .detalle-container {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+
+  .detalle-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+    gap: 24px;
+    padding: 24px;
+  }
+
+  .boletas-box {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .detalle-container {
+    margin-top: 20px;
+    margin-bottom: 48px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .detalle-hero {
+    height: clamp(190px, 55vw, 260px);
+  }
+
+  .hero-overlay {
+    padding: 18px;
+  }
+
+  .hero-overlay h1 {
+    font-size: clamp(1.45rem, 6vw, 1.9rem);
+    overflow-wrap: anywhere;
+  }
+
+  .hero-date {
+    font-size: 0.9rem;
+  }
+
+  .detalle-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    padding: 20px 16px;
+  }
+
+  .lugar-box,
+  .boletas-box {
+    min-width: 0;
+    padding: 16px;
+  }
+
+  .acciones-ubicacion {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .btn-mapa,
+  .btn-ruta,
+  .btn-boleta-externa {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .ticket-tier {
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .ticket-tier > div:first-child {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .ticket-price {
+    flex: 1 1 100%;
+    align-items: stretch;
+  }
+
+  .compra-controles {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .btn-cant {
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+  }
+
+  .btn-comprar {
+    flex: 1 1 100%;
+    min-height: 40px;
+  }
 }

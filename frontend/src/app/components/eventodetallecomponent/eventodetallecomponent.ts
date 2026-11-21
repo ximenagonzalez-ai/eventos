@@ -32,7 +32,7 @@ export class EventoDetalleComponent implements OnInit {
     private boletaService: BoletaService,
     private router: Router,
     private destroyRef: DestroyRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.route.paramMap.pipe(

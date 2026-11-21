@@ -88,7 +88,34 @@
         <div
           *ngIf="!evento.tiposBoleta || evento.tiposBoleta.length === 0"
           class="sin-boletas">
-          Aún no hay localidades habilitadas para este evento.
+          <ng-container
+            *ngIf="evento.precioMinimoExterno != null || evento.precioMaximoExterno != null || evento.urlVentaExterna; else sinDatosExternos">
+            <p
+              class="precio-externo"
+              *ngIf="evento.precioMinimoExterno != null || evento.precioMaximoExterno != null">
+              <ng-container
+                *ngIf="evento.precioMinimoExterno != null && evento.precioMaximoExterno != null && evento.precioMinimoExterno !== evento.precioMaximoExterno; else precioExternoUnico">
+                Desde {{ evento.precioMinimoExterno | number }} hasta {{ evento.precioMaximoExterno | number }}
+              </ng-container>
+              <ng-template #precioExternoUnico>
+                {{ (evento.precioMinimoExterno ?? evento.precioMaximoExterno) | number }}
+              </ng-template>
+              {{ evento.monedaPrecioExterno }}
+            </p>
+
+            <a
+              *ngIf="evento.urlVentaExterna"
+              [href]="evento.urlVentaExterna"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-boleta-externa">
+              Ser dirigido a la página de venta de entradas
+            </a>
+          </ng-container>
+
+          <ng-template #sinDatosExternos>
+            Aún no hay localidades habilitadas para este evento.
+          </ng-template>
         </div>
 
         <div

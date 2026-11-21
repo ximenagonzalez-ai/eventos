@@ -22,6 +22,10 @@ export interface Evento {
   estado: EstadoEvento;
   fuente?: FuenteEvento;
   idexterno?: string;
+  urlVentaExterna?: string;
+  precioMinimoExterno?: number;
+  precioMaximoExterno?: number;
+  monedaPrecioExterno?: string;
   categoriaId?: number;
   categoriaNombre?: string;
   lugar?: Lugar;

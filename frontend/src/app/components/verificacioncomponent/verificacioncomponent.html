@@ -1,5 +1,5 @@
 <div class="auth-container">
-  <div class="auth-card">
+  <div class="card auth-card">
     <h2>Verificación de Cuenta</h2>
 
     <div *ngIf="cargando" class="estado-box">
@@ -17,28 +17,7 @@
       <div class="icon-error">✕</div>
       <p>{{ mensaje }}</p>
       <small *ngIf="codigoError" class="error-code">Código: {{ codigoError }}</small>
-
-      <div class="reenvio-box" *ngIf="!reenvioExitoso">
-        <p class="reenvio-texto">¿Quieres que te enviemos un nuevo enlace?</p>
-        <input
-          type="email"
-          [(ngModel)]="emailReenvio"
-          name="emailReenvio"
-          placeholder="Tu correo electrónico"
-          class="input-email"
-        />
-        <button class="btn-primary" (click)="reenviarVerificacion()" [disabled]="enviandoReenvio">
-          {{ enviandoReenvio ? 'Enviando...' : 'Reenviar enlace de verificación' }}
-        </button>
-        <p *ngIf="errorReenvio" class="msg-error-reenvio">{{ errorReenvio }}</p>
-      </div>
-
-      <p *ngIf="reenvioExitoso" style="color: #34d399; margin-top: 12px;">
-        ✅ Te enviamos un nuevo enlace. Revisa tu correo.
-      </p>
-
       <button class="btn-secondary" routerLink="/login">Volver al Inicio de Sesión</button>
     </div>
-
   </div>
 </div>
